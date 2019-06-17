@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <title>Raspberry pi controller</title>
+
+</head>
+<body>
+<div id="content">{% block content %}
+    {% endblock %}
+</div>
+
+<div class="clock2"><a style="text-decoration:none;">
+    <iframe src="http://free.timeanddate.com/clock/i6stpmjb/n28/fn14/fs18/tct/ahr/ftb/pa10/tt0/tw1/td2/th1/ta1/tb3"
+            frameborder="0" width="428" height="42" allowTransparency="true"></iframe>
+</div>
+
+</body>
+</html>

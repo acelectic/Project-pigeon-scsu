@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+<html>
+{% block content %}
+<body>
+<h1>Video Streaming Demonstration</h1>
+<form id="LivetoMain" action="/">
+    <input type="submit" value="Mainpage">
+</form>
+<div class="livesteam">
+    <img src="{{ url_for('video_feed') }}" height="720">
+</div>
+
+<!--<img src={{imgdir}}>-->
+</body>
+{% endblock %}
+</html>
