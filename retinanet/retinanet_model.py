@@ -75,8 +75,8 @@ class Model:
                            78: 'hair drier', 79: 'toothbrush'}
 
         # Size image for train on retinenet
-        self.min_side4train = 720
-        self.max_side4train = 900
+        self.min_side4train = 400
+        self.max_side4train = 600
 
         # Size image for Save 2 elasticsearch
         self.min_side4elas = 600
