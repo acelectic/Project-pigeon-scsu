@@ -1,53 +1,18 @@
-import os, time, cv2
-from flask import Flask, render_template, Response, jsonify, request, make_response, redirect, url_for
-from multiprocessing import Process, Value, Pool
+import os, cv2
+from flask import Flask, render_template, Response, request, redirect, url_for
+from multiprocessing import Process
 from importlib import import_module
-import requests
 
-
-import time, glob
-# from imutils.video import VideoStream
-
-
-# from until.yolo_model import yolo_model
-# yolo = yolo_model()
 
 if os.environ.get('CAMERA'):
     Camera = import_module('camera_' + os.environ['CAMERA']).Camera
 else:
     from until.camera_opencv import Camera
 
-# load yolo model
-from until.detect import yolo_detect
-
 app = Flask(__name__)
 status = False
 confidence = 0.5
 detect_every_frame = 2
-
-# class model_config:
-#     def __init__(self, confidence, detect_every_frame):
-#         self.__confidence = confidence
-#         self.__detect_every_frame = detect_every_frame
-#         print('ss')
-#
-#     def setConfidence(self, confident):
-#         self.__confidence = float(confident)
-#
-#     def getConfidence(self):
-#         return self.__confidence
-#
-#     def setDetect_every_frame(self, detect_every_frame):
-#         self.__detect_every_frame = int(detect_every_frame)
-#
-#     def getDetect_every_frame(self):
-#         return self.__detect_every_frame
-#
-# modelcf = model_config(confidence=0.7, detect_every_frame=5)
-
-# vdo4test = glob.glob('video/*.mp4')
-# def get_my_ip():
-#     return jsonify({'ip': request.remote_addr}), 200
 
 @app.after_request
 def set_response_headers(response):
@@ -72,12 +37,6 @@ def index():
 
 def gen(camera = None):
     while True:
-        # # cap =
-        # # time.sleep(1)
-        # # _, img = cv2.VideoCapture(0).read()
-        # img = VideoStream(0).read()
-        # # cap.release()
-        # frame = cv2.imencode('.jpg', img)[1].tobytes()
         frame = camera.get_frame()
         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -100,7 +59,6 @@ def mode(subpath):
             # return "Detect OFF"
         # else:
             # return 'Detect is already OFF'
-
 
     elif subpath == 'on':
         if status:
@@ -125,10 +83,10 @@ def set(subpath):
         data = request.form
     if subpath == 'frame':
         detect_every_frame = data['frame']
-        # print(modelcf.getConfidence(), modelcf.getDetect_every_frame())
+
     elif subpath == 'confidence':
         confidence = data['confidence']
-        # print(modelcf.getConfidence(), modelcf.getDetect_every_frame())
+
 
     return redirect(url_for('index'))
 
@@ -137,36 +95,17 @@ def snap(ip = '127.0.0.1'):
     print('from',ip)
     return render_template('live.html', ip=ip)
 
-def run():
+def run(vdo_ = 0):
     from retinanet import retinanet_model
     retinanet = retinanet_model.Model(confidence=confidence)
-    # cap = cv2.VideoCapture(0)
-    cap = cv2.VideoCapture('retinanet/video/YouTube5.mp4')
-
+    vdo_ = 'retinanet/video/YouTube5.mp4'
+    # cap = cv2.VideoCapture(vdo_)
+    cap = cv2.VideoCapture(vdo_)
     frameindex = 1
     while True:
-
         _, frame = cap.read()
-
-        # if _:
-        #     out = retinanet.detect(frame)
-        #     cv2.imshow('ss', out)
-        #     if cv2.waitKey(25) & 0xFF == ord('q'):
-        #         break
-        #     print("loop running")
-
-        # if _  and (frameindex // detect_every_frame == 0 or detect_every_frame == 1):
-        #     out = retinanet.detect(frame)
-        #     cv2.imshow('ss', out)
-        #     if cv2.waitKey(25) & 0xFF == ord('q'):
-        #         break
-        #     print("loop running")
-
         if _  and frameindex % int(detect_every_frame) == 0:
-            out = retinanet.detect(frame)
-            cv2.imshow('ss', out)
-            if cv2.waitKey(25) & 0xFF == ord('q'):
-                break
+            retinanet.detect(frame)
             print("loop running")
 
         frameindex += 1
@@ -179,5 +118,3 @@ def run():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
-    # test()
-    # fulltest()
