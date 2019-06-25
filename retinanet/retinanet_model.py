@@ -200,7 +200,7 @@ class Model:
         start = time.time()
         boxes, scores, labels = self.model.predict_on_batch(np.expand_dims(image, axis=0))
         processing_time = time.time() - start
-        # print("processing time: ", processing_time)
+        print("processing time: ", processing_time)
 
         img4elas, scale4elas = resize_image(image, min_side=self.min_side4elas, max_side=self.max_side4elas)
 
@@ -222,7 +222,7 @@ class Model:
             draw_box(img4elas, b, color=color)
 
             caption = "{} {:.3f}".format(self.labels_to_names[label], score)
-            # print(b, caption)
+            print(caption)
             draw_caption(img4elas, b, caption)
             box = [np.ushort(x).item() for x in box]
 
@@ -233,6 +233,7 @@ class Model:
 
             self.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
 
+        print()
 
         self.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
 
