@@ -36,14 +36,14 @@ class Model:
         else:
             print(self.es.info)
             self.es_status = True
-            self.es_index = 'pigeon-test'
-            self.es_image = 'pigeon-image-test2'
+            # self.es_index = 'pigeon-test'
+            # self.es_image = 'pigeon-image-test2'
 
             # self.es_index = 'pigeon-recoed-test3'
             # self.es_image = 'pigeon-image-test3'
 
-            # self.es_index = 'pre-data'
-            # self.es_image = 'pre-image'
+            self.es_index = 'pre-data'
+            self.es_image = 'pre-image'
 
         self.confThreshold = float(confidence)
 
