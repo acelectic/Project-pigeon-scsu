@@ -205,7 +205,7 @@ class Model:
         processing_time = time.time() - start
         print("processing time: ", processing_time)
 
-        img4elas, scale4elas = resize_image(image, min_side=self.min_side4elas, max_side=self.max_side4elas)
+        img4elas, scale4elas = resize_image(draw, min_side=self.min_side4elas, max_side=self.max_side4elas)
 
         # correct for image scale
         boxes /= scale4elas
