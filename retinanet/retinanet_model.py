@@ -5,44 +5,45 @@ from datetime import datetime
 import pytz, radar, base64
 from uuid import uuid4
 
-thai_timezone = pytz.timezone('Asia/Bangkok')
 
-# es = Elasticsearch()
-es = Elasticsearch([{'host': '192.168.1.29', 'port': 9200}])
-# es = Elasticsearch([{'host': '172.27.228.44', 'port': 9200}])
 
-es_index = 'pigeon-test'
-es_image = 'pigeon-image-test2'
-
-# es_index = 'pigeon-recoed-test3'
-# es_image = 'pigeon-image-test3'
-
-# es_index = 'pre-data'
-# es_image = 'pre-image'
-
-# import keras
-import keras
-
-# import keras_retinanet
-# from keras_retinanet import models
 from keras_retinanet.utils.image import read_image_bgr, preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 from keras_retinanet.utils.colors import label_color
-# import miscellaneous modules
-import matplotlib.pyplot as plt
 import cv2
-import os
+
 import numpy as np
 import time
 
 # set tf backend to allow memory to grow, instead of claiming everything
-import tensorflow as tf
 from keras_retinanet.models import load_model
 import pytz
 from tzlocal import get_localzone
 
+
+thai_timezone = pytz.timezone('Asia/Bangkok')
+
 class Model:
     def __init__(self, confidence=0.5):
+
+        # es = Elasticsearch()
+        self.es = Elasticsearch([{'host': '192.168.1.29', 'port': 9200}])
+        # es = Elasticsearch([{'host': '172.27.228.44', 'port': 9200}])
+
+        if not self.es.ping():
+            # raise ValueError("Connection failed")
+            self.es_status = False
+        else:
+            print(self.es.info)
+            self.es_status = True
+            self.es_index = 'pigeon-test'
+            self.es_image = 'pigeon-image-test2'
+
+            # self.es_index = 'pigeon-recoed-test3'
+            # self.es_image = 'pigeon-image-test3'
+
+            # self.es_index = 'pre-data'
+            # self.es_image = 'pre-image'
 
         self.confThreshold = float(confidence)
 
@@ -78,8 +79,8 @@ class Model:
         self.max_side4train = 900
 
         # Size image for Save 2 elasticsearch
-        self.min_side4store = 600
-        self.max_side4store = 800
+        self.min_side4elas = 600
+        self.max_side4elas = 800
 
         # labels_to_names = {0: 'Pigeon'}
         # print('model confidence:', self.confThreshold)
@@ -132,185 +133,55 @@ class Model:
 
 
     def elas_image(self, eventid, image, scale, time_, found_, processing_time):
-        body = {}
-        body['orginal_image'] = self.img2string(image)
-        body['scale'] = scale
+        if self.es_status:
+            body = {}
+            body['orginal_image'] = self.img2string(image)
+            body['scale'] = scale
 
-        body['timestamp'] = self.localtimezone(time_)
-        # body['timestamp_utc'] = self.utctimezone(time_)
+            body['timestamp'] = self.localtimezone(time_)
+            # body['timestamp_utc'] = self.utctimezone(time_)
 
-        body['Hour_int'] = int(time_.strftime('%-H'))
-        body['Hour_text'] = self.hour_text[body['Hour_int']]
+            body['Hour_int'] = int(time_.strftime('%-H'))
+            body['Hour_text'] = self.hour_text[body['Hour_int']]
 
-        body['dayofweek_int'] = self.dayofweek_int(time_)
-        body['dayofweek_text'] = self.dayofweek_text(time_)
+            body['dayofweek_int'] = self.dayofweek_int(time_)
+            body['dayofweek_text'] = self.dayofweek_text(time_)
 
-        body['Mouth_int'] = self.month_int(time_)
-        body['Mouth_text'] = self.month_text(time_)
+            body['Mouth_int'] = self.month_int(time_)
+            body['Mouth_text'] = self.month_text(time_)
 
-        body['found'] = found_
+            body['found'] = found_
 
-        body['processing_time'] = processing_time
-        # print(body)
-        es.index(index=es_image, id=eventid, body=body)
+            body['processing_time'] = processing_time
+            # print(body)
+            self.es.index(index=self.es_image, id=eventid, body=body)
 
     def elas_record(self, eventid, time_, label, score, box):
-        body = {}
-        body['timestamp'] = self.localtimezone(time_)
-        # body['timestamp_utc'] = self.utctimezone(time_)
+        if self.es_status:
+            body = {}
+            body['timestamp'] = self.localtimezone(time_)
+            # body['timestamp_utc'] = self.utctimezone(time_)
 
-        body['Hour_int'] = int(time_.strftime('%-H'))
-        body['Hour_text'] = self.hour_text[body['Hour_int']]
+            body['Hour_int'] = int(time_.strftime('%-H'))
+            body['Hour_text'] = self.hour_text[body['Hour_int']]
 
-        body['dayofweek_int'] = self.dayofweek_int(time_)
-        body['dayofweek_text'] = self.dayofweek_text(time_)
+            body['dayofweek_int'] = self.dayofweek_int(time_)
+            body['dayofweek_text'] = self.dayofweek_text(time_)
 
-        body['Mouth_int'] = self.month_int(time_)
-        body['Mouth_text'] = self.month_text(time_)
+            body['Mouth_int'] = self.month_int(time_)
+            body['Mouth_text'] = self.month_text(time_)
 
-        body['image_id'] = eventid
-        body['found'] = {self.labels_to_names[label]: 1}
-        body['confidence'] = score
-        body['box'] = {'x1':box[0], 'y1':box[1], 'x2':box[2], 'y2':box[3]}
+            body['image_id'] = eventid
+            body['found'] = {self.labels_to_names[label]: 1}
+            body['confidence'] = score
+            body['box'] = {'x1': box[0], 'y1': box[1], 'x2': box[2], 'y2': box[3]}
 
-
-        # print(body)
-        es.index(index=es_index, body=body)
-
-    def test_video(self):
-        cap = cv2.VideoCapture('video/pigeon-12.mp4')
-        # cap = cv2.VideoCapture(0)
-
-        currentFrame = 0
-        while (True):
-            # Capture frame-by-frame
-            ret, frame = cap.read()
-            # frame, scale = resize_image(frame, max_side=800)
-
-            if ret:
-                # print(frame.shape)
-                # image = read_image_bgr(frame)
-
-                # copy to draw on
-                draw = frame.copy()
-                # draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
-
-                # preprocess image for network
-                image = preprocess_image(frame)
-                image, scale = resize_image(image, min_side=self.min_side4train, max_side=self.max_side4train)
-
-                time_ = self.gen_datetime()
-                eventid = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-                print('imgae_id', eventid)
-
-                # elas_image(image=image, eventid=eventid, scale=scale, time_=time_)
-
-                # process image
-                start = time.time()
-                boxes, scores, labels = self.model.predict_on_batch(np.expand_dims(image, axis=0))
-                processing_time = time.time() - start
-                print("processing time: ", processing_time)
-
-                # correct for image scale
-                boxes /= scale
-                found_ = {}
-                # visualize detections
-                for box, score, label in zip(boxes[0], scores[0], labels[0]):
-                    # scores are sorted so we can break
-                    if score < self.confThreshold:
-                        break
-                    color = label_color(label)
-
-                    b = box.astype(int)
-
-                    draw_box(draw, b, color=color)
-
-                    caption = "{} {:.3f}".format(self.labels_to_names[label], score)
-                    print(b, caption)
-                    draw_caption(draw, b, caption)
-                    box = [np.ushort(x).item() for x in box]
-
-                    try:
-                        found_[self.labels_to_names[label]] += 1
-                    except:
-                        found_[self.labels_to_names[label]] = 1
-
-
-                    self.elas_record(eventid=eventid, time_=time_, label=label, score=np.float32(score).item(), box=box, processing_time=processing_time)
-
-
-                d2 = draw.copy()
-                d2, s2 = resize_image(d2, min_side=self.min_side4store, max_side=self.max_side4store)
-                print(d2.shape, s2)
-
-                self.elas_image(image=d2, eventid=eventid, scale=scale, time_=time_, found_= found_)
-                print(draw.shape)
-
-                cv2.imshow('frame', draw)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
-
-        cap.release()
-        cv2.destroyAllWindows()
-
-    def test_image(self, image_path= None):
-        if image_path is None:
-            image_path = 'image/ca.jpg'
-        image = read_image_bgr(image_path)
-
-        # copy to draw on
-        draw = image.copy()
-        # draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
-        print(draw.shape)
-        # preprocess image for network
-        image = preprocess_image(draw)
-        image, scale = resize_image(image, min_side=720, max_side=1280)
-        print(image.shape)
-        # time_ = gen_datetime()
-        time_ = datetime.now()
-
-        eventid = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-        print('imgae_id', eventid)
-        # self.elas_image(image=draw, eventid=eventid, scale=scale, time_=time_)
-
-        # process image
-        start = time.time()
-        boxes, scores, labels = self.model.predict_on_batch(np.expand_dims(image, axis=0))
-        processing_time = time.time() - start
-        print("processing time: ", processing_time)
-
-        # correct for image scale
-        boxes /= scale
-
-        # visualize detections
-        for box, score, label in zip(boxes[0], scores[0], labels[0]):
-            # scores are sorted so we can break
-            if score < self.confThreshold:
-                break
-
-            color = label_color(label)
-
-            b = box.astype(int)
-
-            draw_box(draw, b, color=color)
-
-            caption = "{} {:.3f}".format(self.labels_to_names[label], score)
-            # print(b, caption)
-            draw_caption(draw, b, caption)
-            box = [np.float32(x).item() for x in box]
-            self.elas_record(eventid=eventid, time_=time_, label=label, score=np.float32(score).item(), box=box,
-                        processing_time=processing_time)
-
-        cv2.imshow('result', draw)
-        cv2.waitKey()
+            # print(body)
+            self.es.index(index=self.es_index, body=body)
 
     def detect(self, image):
-        # print(frame.shape)
-        # image = read_image_bgr(frame)
-
         # copy to draw on
         draw = image.copy()
-        # draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
 
         # preprocess image for network
         image = preprocess_image(image)
@@ -324,7 +195,6 @@ class Model:
         # print('time', time_)
         # print('local', self.localtimezone(time_))
         # print('utc',  self.utctimezone(time_))
-        # elas_image(image=image, eventid=eventid, scale=scale, time_=time_)
 
         # process image
         start = time.time()
@@ -332,8 +202,10 @@ class Model:
         processing_time = time.time() - start
         # print("processing time: ", processing_time)
 
+        img4elas, scale4elas = resize_image(image, min_side=self.min_side4elas, max_side=self.max_side4elas)
+
         # correct for image scale
-        boxes /= scale
+        boxes /= scale4elas
         found_ = {}
 
         main_body = {'eventid':eventid,  'time_':time_}
@@ -347,11 +219,11 @@ class Model:
 
             b = box.astype(int)
 
-            draw_box(draw, b, color=color)
+            draw_box(img4elas, b, color=color)
 
             caption = "{} {:.3f}".format(self.labels_to_names[label], score)
             # print(b, caption)
-            draw_caption(draw, b, caption)
+            draw_caption(img4elas, b, caption)
             box = [np.ushort(x).item() for x in box]
 
             try:
@@ -361,14 +233,9 @@ class Model:
 
             self.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
 
-        d2 = draw.copy()
-        d2, s2 = resize_image(d2, min_side=self.min_side4store, max_side=self.max_side4store)
-        # print(d2.shape, s2)
 
-        self.elas_image(image=d2, scale=scale, found_=found_, processing_time=processing_time, **main_body)
-        # print(draw.shape)
+        self.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
 
-        return d2
 
     def setConfidence(self, confidence):
         self.confThreshold = float(confidence)
