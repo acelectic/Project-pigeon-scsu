@@ -36,14 +36,14 @@ class Model:
         else:
             print(self.es.info)
             self.es_status = True
-            # self.es_index = 'pigeon-test'
-            # self.es_image = 'pigeon-image-test2'
+            self.es_index = 'pigeon-test'
+            self.es_image = 'pigeon-image-test2'
 
             # self.es_index = 'pigeon-recoed-test3'
             # self.es_image = 'pigeon-image-test3'
 
-            self.es_index = 'pre-data'
-            self.es_image = 'pre-image'
+            # self.es_index = 'pre-data'
+            # self.es_image = 'pre-image'
 
         self.confThreshold = float(confidence)
 
@@ -75,8 +75,8 @@ class Model:
                            78: 'hair drier', 79: 'toothbrush'}
 
         # Size image for train on retinenet
-        self.min_side4train = 400
-        self.max_side4train = 600
+        self.min_side4train = 500
+        self.max_side4train = 650
 
         # Size image for Save 2 elasticsearch
         self.min_side4elas = 600

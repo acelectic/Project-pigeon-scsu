@@ -98,7 +98,7 @@ def snap(ip = '127.0.0.1'):
 def run(vdo_ = 0):
     from retinanet import retinanet_model
     retinanet = retinanet_model.Model(confidence=confidence)
-    # vdo_ = 'video/YouTube4.mp4'
+    vdo_ = 'video/YouTube4.mp4'
     # cap = cv2.VideoCapture(vdo_)
     cap = cv2.VideoCapture(vdo_)
     frameindex = 1
