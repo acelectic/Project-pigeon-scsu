@@ -26,6 +26,9 @@ thai_timezone = pytz.timezone('Asia/Bangkok')
 class Model:
     def __init__(self, confidence=0.5):
 
+        # self.time2store = self.gen_datetime()
+        self.time2store = datetime.now()
+
         # es = Elasticsearch()
         self.es = Elasticsearch([{'host': '192.168.1.29', 'port': 9200}])
         # es = Elasticsearch([{'host': '172.27.228.44', 'port': 9200}])
@@ -75,8 +78,8 @@ class Model:
                            78: 'hair drier', 79: 'toothbrush'}
 
         # Size image for train on retinenet
-        self.min_side4train = 500
-        self.max_side4train = 650
+        self.min_side4train = 600
+        self.max_side4train = 800
 
         # Size image for Save 2 elasticsearch
         self.min_side4elas = 600
@@ -135,7 +138,7 @@ class Model:
     def elas_image(self, eventid, image, scale, time_, found_, processing_time):
         if self.es_status:
             body = {}
-            body['orginal_image'] = self.img2string(image)
+            body['original_image'] = self.img2string(image)
             body['scale'] = scale
 
             body['timestamp'] = self.localtimezone(time_)
@@ -187,7 +190,7 @@ class Model:
         image = preprocess_image(image)
         image, scale = resize_image(image, min_side=self.min_side4train, max_side=self.max_side4train)
 
-        time_ = self.gen_datetime()
+        time_ = self.time2store
         # time_ = datetime.now()
 
         eventid = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
