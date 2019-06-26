@@ -8,34 +8,36 @@
 <div class="form1">
     <table class="form2">
         <tr>
-            <td class="dog1">
+            <th class="dog1">
+                Confidence:
                 <form action="/set/confidence" method="post">
-                    <p>Confidence: </p>
+
             <td class="dog2"><input class="full1" name="confidence" type="number" min="0.5" max="1"
                                     step="0.1"
                                     value={{confidence}}>
             </td>
-            <td><input type="submit" value="Apply Confidence">
+            <td>
+                <input type="submit" value="Apply Confidence">
             </td>
             </form>
-            </td>
+            </th>
         </tr>
         <tr>
-            <td class="dog1">
+            <th class="dog1">
+                Second per Frame:
                 <form action="set/frame" method="post">
-                    <p>Second per Frame: </p>
+
             <td class="dog2"><input class="full1" name="frame" type="number" min="5" max="30"
                                     step="1"
                                     value={{sec_per_frame}}></td>
             <td><input type="submit" value="Apply Second per Frame"></td>
 
             </form>
-            </td>
+            </th>
         </tr>
         <tr>
-            <td class="dog1">
-
-                <p>Detect Status :</p>
+            <th class="dog1">
+                Detect Status :
                 {% if status == 'off'%}
 
             <td class="dog2"><p class="dog5" style="color: red">&nbsp{{status}}&nbsp</p></td>
@@ -59,7 +61,18 @@
 
             </td>
         </tr>
+        <tr>
+            <th>
+                Elasticsearch Status:
+                {% if es_status %}
+            <td style="color: green">Connect</td>
 
+            <td>Host: {{es_ip}}</td>
+            {% else %}
+            <td style="color: red">Disconnect</td>
+            {%endif%}
+            </th>
+        </tr>
     </table>
 </div>
 <div class="status1">
@@ -73,7 +86,7 @@
 
             </td>
             <td style="text-align: center;">
-                <form action= "{{fullip}}">
+                <form action="{{fullip}}">
                     <button style="height:50px; width:50%;" type="submit" value="Mainpage">Back to Main Web</button>
                 </form>
             </td>

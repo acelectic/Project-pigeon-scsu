@@ -1,5 +1,6 @@
-import time
 import threading
+import time
+
 try:
     from greenlet import getcurrent as get_ident
 except ImportError:
@@ -13,6 +14,7 @@ class CameraEvent(object):
     """An Event-like class that signals all active clients when a new frame is
     available.
     """
+
     def __init__(self):
         self.events = {}
 

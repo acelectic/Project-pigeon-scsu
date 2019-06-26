@@ -1,4 +1,5 @@
 from tzlocal import get_localzone
+
 local_tz = get_localzone()
 
 import pytz
@@ -6,12 +7,13 @@ import pytz
 print(local_tz)
 import radar
 from datetime import datetime
-from dateutil.tz import tzlocal, tzutc
+
 
 def gen_datetime():
     return radar.random_date(
         start=datetime(year=2019, month=6, day=1),
         stop=datetime(year=2019, month=6, day=11))
+
 
 def localtimezone(time):
     local_tz = get_localzone()
@@ -19,7 +21,7 @@ def localtimezone(time):
     return timezone.localize(time)
 
 
-def utctimezone( time):
+def utctimezone(time):
     # local_tz = get_localzone()
     # return time.astimezone(local_tz)
     try:
@@ -29,6 +31,7 @@ def utctimezone( time):
         utc_tz = pytz.timezone('UTC')
         tmp_ = localtimezone(time)
         return tmp_.astimezone(utc_tz)
+
 
 now = datetime.now()
 # now = gen_datetime()
@@ -43,10 +46,9 @@ now = datetime.now()
 # print(tutc.astimezone(local_tz))
 
 
-
 # print(now)
 print(now)
-sss= localtimezone(now)
+sss = localtimezone(now)
 print(sss)
 # ssssc = now.astimezone()
 print(utctimezone(now))

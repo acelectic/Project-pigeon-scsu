@@ -1,18 +1,29 @@
-import os, cv2
-from flask import Flask, render_template, Response, request, redirect, url_for
-from multiprocessing import Process
+import os
 from importlib import import_module
+from multiprocessing import Process
 
+import cv2
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask, render_template, Response, request, redirect, url_for
+from tzlocal import get_localzone
 
 if os.environ.get('CAMERA'):
     Camera = import_module('camera_' + os.environ['CAMERA']).Camera
 else:
     from until.camera_opencv import Camera
 
+from until.elas_api import elas_api
+
+es_ip = '192.168.1.29'
+es_port = 9200
+es = elas_api(ip=es_ip)
+
 app = Flask(__name__)
+es_status = es.checkStatus()[0]
 status = False
 confidence = 0.5
 sec_per_frame = 5
+
 
 @app.after_request
 def set_response_headers(response):
@@ -20,6 +31,7 @@ def set_response_headers(response):
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
+
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -30,24 +42,26 @@ def index():
         if data['snap'] == "go2snap":
             return redirect(url_for('snap', ip=ip))
 
-
     print(request.remote_addr)
-    return render_template('index.html', status = 'on' if status else 'off', _pass='pigeon' , confidence= confidence ,sec_per_frame=sec_per_frame, ip=ip, fullip = "http://{}:5000/".format(ip))
+    return render_template('index.html', status='on' if status else 'off', _pass='pigeon', confidence=confidence,
+                           sec_per_frame=sec_per_frame, ip=ip, fullip="http://{}:5000/".format(ip), es_status=es_status,
+                           es_ip=es_ip + ':{}'.format(es_port))
 
 
-def gen(camera = None):
+def gen(camera=None):
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+
 @app.route('/video_feed')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
-    return Response(gen(Camera()), mimetype = 'multipart/x-mixed-replace; boundary=frame')
+    return Response(gen(Camera()), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @app.route('/mode/<path:subpath>', methods=["POST"])
 def mode(subpath):
-    import time
     global p, status
     # print(request.subject)
 
@@ -58,7 +72,7 @@ def mode(subpath):
             status = False
             # return "Detect OFF"
         # else:
-            # return 'Detect is already OFF'
+        # return 'Detect is already OFF'
 
     elif subpath == 'on':
         if status:
@@ -70,14 +84,14 @@ def mode(subpath):
             p.start()
             # return 'Detect ON'
 
-
     return redirect(url_for('index'))
+
 
 @app.route('/set/<path:subpath>', methods=["POST"])
 def set(subpath):
     global detect_every_frame, confidence
     # print(request.form['frame'])
-    try :
+    try:
         data = request.get_json(force=True)
     except:
         data = request.form
@@ -87,22 +101,20 @@ def set(subpath):
     elif subpath == 'confidence':
         confidence = data['confidence']
 
-
     return redirect(url_for('index'))
 
+
 @app.route('/snap', methods=["GET"])
-def snap(ip = '127.0.0.1'):
-    print('from',ip)
+def snap(ip='127.0.0.1'):
+    print('from', ip)
     return render_template('live.html', ip=ip)
 
-def run(vdo_ = 0):
+
+def run(vdo_=0):
     from retinanet import retinanet_model
     retinanet = retinanet_model.Model(confidence=confidence)
 
-    from apscheduler.schedulers.background import BackgroundScheduler
-    from tzlocal import get_localzone
-
-    print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format('','Detect ON','',confidence, sec_per_frame))
+    print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format('', 'Detect ON', '', confidence, sec_per_frame))
 
     status_detect = False
 
@@ -120,7 +132,7 @@ def run(vdo_ = 0):
 
     while True:
         _, frame = cap.read()
-        if _  and status_detect:
+        if _ and status_detect:
             retinanet.detect(frame)
             print("loop running")
 

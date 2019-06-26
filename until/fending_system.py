@@ -1,5 +1,3 @@
-
-
 class fending:
 
     def __init__(self):
