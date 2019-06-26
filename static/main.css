@@ -96,6 +96,14 @@ table {
     max-height: min-content;
 }
 
+.dog6 {
+    min-width: max-content;
+    text-align: center;
+    font-weight: bold;
+    width: auto;
+    height: auto;
+    max-height: min-content;
+}
 
 td {
     width: 50%;
@@ -104,7 +112,9 @@ td {
 }
 
 td > input{
-    width: 90%;
+    width: auto;
+    min-width: 40%;
+    min-height: 30px;
 }
 
 .detect-button > button{
@@ -123,9 +133,9 @@ td > input{
     right:0px;
     margin: 10px;
     padding:1em 0;
-    position: fixed;
+
     z-index: 98;
-    text-align:right;
+    text-align:left;
 
     width:100%;
 }

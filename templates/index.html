@@ -9,6 +9,7 @@
     <table class="form2">
         <tr>
             <td class="dog1">
+                Confident:
                 <form action="/set/confidence" method="post">
 
             <td class="dog2"><input class="full1" name="confidence" type="number" min="0.5" max="1"
@@ -61,15 +62,24 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td class="dog1">
                 Elasticsearch Status:
+            </td>
+            <td class="dog6" style="background-color:white">
+                <table>
+               <tr>
+
+
                 {% if es_status %}
-            <td style="color: green">Connect<td>Host: {{es_ip}}</td></td>
 
+                <td style="color: green">Connect</td><td>{{es_ip}}</td>
 
-            {% else %}
-            <td style="color: red">Disconnect</td>
-            {%endif%}
+                {% else %}
+                <td style="color: red">Disconnect</td>
+                {%endif%}
+
+                </tr>
+            </table>
             </td>
         </tr>
     </table>
