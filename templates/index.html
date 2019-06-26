@@ -22,7 +22,7 @@
             </td>
         </tr>
         <tr>
-            <th class="dog1">
+            <td class="dog1">
                 Second per Frame:
                 <form action="set/frame" method="post">
 
@@ -32,10 +32,10 @@
             <td><input type="submit" value="Apply"></td>
 
             </form>
-            </th>
+            </td>
         </tr>
         <tr>
-            <th class="dog1">
+            <td class="dog1">
                 Detect Status :
                 {% if status == 'off'%}
 
@@ -61,7 +61,7 @@
             </td>
         </tr>
         <tr>
-            <th>
+            <td>
                 Elasticsearch Status:
                 {% if es_status %}
             <td style="color: green">Connect</td>
@@ -70,7 +70,7 @@
             {% else %}
             <td style="color: red">Disconnect</td>
             {%endif%}
-            </th>
+            </td>
         </tr>
     </table>
 </div>
