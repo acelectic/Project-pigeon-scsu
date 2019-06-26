@@ -1,0 +1,174 @@
+p {
+    font-family: "Tahoma"
+}
+
+html, body {
+   height: 100%; /* ให้ html และ body สูงเต็มจอภาพไว้ก่อน */
+   margin: 0;
+   padding: 0;
+
+
+}
+.wrapper {
+   display: block;
+   min-height: 100%; /* real browsers */
+   height: auto !important; /* real browsers */
+   height: 100%; /* IE6 bug */
+   margin-bottom: -8%; /* กำหนด margin-bottom ให้ติดลบเท่ากับความสูงของ footer */
+}
+
+
+body {
+    background-color: #737373;
+
+}
+
+h1 {
+    font-size: 50px;
+    text-align: center;
+}
+
+p {
+    font-size: 22px;
+}
+
+.form1 {
+    position: relative;
+    margin: auto;
+    max-width: 35%;
+    width:auto;
+
+}
+
+.form2 {
+    text-align: center;
+}
+
+.status1 {
+    margin: auto;
+    margin-top: 20px;
+    width: 35%;
+    text-align: center;
+}
+
+table {
+    position: relative;
+    width: 100%;
+}
+
+.livesteam {
+    max-height: 600px;
+    text-align: center;
+}
+
+#LivetoMain {
+    text-align: center;
+}
+
+#LivetoMain > input{
+    width: max-content;
+    font-size: 22px;
+    margin: 15px;
+}
+
+#LivetoMain > button:hover {
+    background-color:
+}
+
+.detect-button {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.dog1 {
+    text-align: left;
+    width: auto;
+    min-width: max-content;
+}
+
+.dog2, .full1 {
+    min-width: max-content;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    width: auto;
+    height: auto;
+    max-height: min-content;
+}
+
+
+td {
+    width: 50%;
+    height:auto;
+    min-height: max-content;
+}
+
+td > input{
+    width: 90%;
+}
+
+.detect-button > button{
+    height: 100%;
+}
+
+.ip-position {
+    position: fixed;
+    z-index: 99;
+    top: 5px;
+    left: 5px;
+}
+
+.clock2 {
+    top:0px;
+    right:0px;
+    margin: 10px;
+    padding:1em 0;
+    position: fixed;
+    z-index: 98;
+    text-align:right;
+
+    width:100%;
+}
+
+.clock {
+    top: 5px;
+    right: 5px;
+    position: fixed;
+    z-index: 98;
+    text-align:center;
+    width:auto;
+    height:auto;
+}
+
+#footer {
+    width: 100%;
+    position:  absolute;
+    height: 8%;
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 0 0;
+    height: 8%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: #FFF;
+    position: relative;
+    width: 100%;
+}
+
+.full1 {
+    text-align:center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.dog5 {
+    width:100%;
+    background-color: white;
+
+}
+
+
+
+
