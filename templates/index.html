@@ -64,9 +64,9 @@
             <td>
                 Elasticsearch Status:
                 {% if es_status %}
-            <td style="color: green">Connect</td>
+            <td style="color: green">Connect<td>Host: {{es_ip}}</td></td>
 
-            <td>Host: {{es_ip}}</td>
+
             {% else %}
             <td style="color: red">Disconnect</td>
             {%endif%}
