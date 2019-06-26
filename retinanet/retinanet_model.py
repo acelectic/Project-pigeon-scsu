@@ -21,7 +21,7 @@ import pytz
 from tzlocal import get_localzone
 
 
-thai_timezone = pytz.timezone('Asia/Bangkok')
+# thai_timezone = pytz.timezone('Asia/Bangkok')
 
 class Model:
     def __init__(self, confidence=0.5):
@@ -239,7 +239,10 @@ class Model:
         print()
 
         self.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
+        return 'Now: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(self.localtimezone(datetime.now()), eventid, len(boxes), processing_time, '\n{:#>20} {} {:#<20}'.format('', 'END 1 FRAME', ''))
 
 
     def setConfidence(self, confidence):
+        print("confident: {} ---> {}".format(self.confThreshold, confidence))
         self.confThreshold = float(confidence)
+

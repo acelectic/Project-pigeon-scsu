@@ -12,7 +12,7 @@ else:
 app = Flask(__name__)
 status = False
 confidence = 0.5
-detect_every_frame = 2
+sec_per_frame = 5
 
 @app.after_request
 def set_response_headers(response):
@@ -32,7 +32,7 @@ def index():
 
 
     print(request.remote_addr)
-    return render_template('index.html', status = 'on' if status else 'off', _pass='pigeon' , confidence= confidence ,detect_every_frame=detect_every_frame, ip=ip, fullip = "http://{}:5000/".format(ip))
+    return render_template('index.html', status = 'on' if status else 'off', _pass='pigeon' , confidence= confidence ,sec_per_frame=sec_per_frame, ip=ip, fullip = "http://{}:5000/".format(ip))
 
 
 def gen(camera = None):
@@ -98,17 +98,32 @@ def snap(ip = '127.0.0.1'):
 def run(vdo_ = 0):
     from retinanet import retinanet_model
     retinanet = retinanet_model.Model(confidence=confidence)
+
+    from apscheduler.schedulers.background import BackgroundScheduler
+    from tzlocal import get_localzone
+
+    print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format('','Detect ON','',confidence, sec_per_frame))
+
+    status_detect = False
+
+    def task_deley():
+        global status_detect
+        status_detect = False
+        print('Detect status: {}'.format(status_detect))
+
+    scheduler = BackgroundScheduler(timezone=get_localzone())
+    scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
+    scheduler.start()
     # vdo_ = 'video/YouTube4.mp4'
     # cap = cv2.VideoCapture(vdo_)
     cap = cv2.VideoCapture(vdo_)
-    frameindex = 1
+
     while True:
         _, frame = cap.read()
-        if _  and frameindex % int(detect_every_frame) == 0:
+        if _  and status_detect:
             retinanet.detect(frame)
             print("loop running")
 
-        frameindex += 1
     cap.release()
 
     global status
