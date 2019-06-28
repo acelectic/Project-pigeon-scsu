@@ -4,106 +4,153 @@
 
 {% block content %}
 <body>
-<h1>Fending out Pigeon</h1>
-<div class="form1">
-    <table class="form2">
-        <tr>
-            <td class="dog1">
-                Confident:
-                <form action="/set/confidence" method="post">
 
-            <td class="dog2"><input class="full1" name="confidence" type="number" min="0.5" max="1"
-                                    step="0.1"
-                                    value={{confidence}}>
-            </td>
-            <td>
-                <input type="submit" value="Apply">
-            </td>
-            </form>
-            </td>
-        </tr>
-        <tr>
-            <td class="dog1">
-                Second per Frame:
-                <form action="set/frame" method="post">
+<!-- Page Content goes here -->
 
-            <td class="dog2"><input class="full1" name="frame" type="number" min="5" max="30"
-                                    step="1"
-                                    value={{sec_per_frame}}></td>
-            <td><input type="submit" value="Apply"></td>
-
-            </form>
-            </td>
-        </tr>
-        <tr>
-            <td class="dog1">
-                Detect Status :
-                {% if status == 'off'%}
-
-            <td class="dog2"><p class="dog5" style="color: red">&nbsp{{status}}&nbsp</p></td>
-            {% else %}
-
-            <td class="dog2"><p class="dog5" style="color: green">&nbsp{{status}}&nbsp</p>
-            </td>
-
-            {%endif%}
-
-
-            {% if status == 'off' %}
-            <form action="/mode/on" method="post">
-                <td><input name="pass" type="submit" value="Turn ON"></td>
-            </form>
-            {% else %}
-            <form action="/mode/off" method="post">
-                <td><input name="pass" type="submit" value="Turn OFF"></td>
-            </form>
-            {%endif%}
-
-            </td>
-        </tr>
-        <tr>
-            <td class="dog1">
-                Elasticsearch Status:
-            </td>
-            <td class="dog6" style="background-color:white">
-                <table>
-               <tr>
-
-
-                {% if es_status %}
-
-                <td style="color: green">Connect</td><td>{{es_ip}}</td>
-
-                {% else %}
-                <td style="color: red">Disconnect</td>
-                {%endif%}
-
-                </tr>
-            </table>
-            </td>
-        </tr>
-    </table>
+<div class="head1">
+    <h1 id="head_1">Fending out Pigeon</h1>
+    <script type="text/javascript" src="static/main.js"></script>
 </div>
-<div class="status1">
-    <table>
-        <tr>
-            <td style="text-align: center;">
-                <form action="/" method="post">
-                    <button style="height:50px; width:50%;" name="snap" type="submit" value="go2snap">Slow Live Now
+<div class="divider"></div>
+<div>
+    <div id="in-content" style="width:80%;">
+        <section style="display:flex;   flex-direction: column;">
+            <div>
+                <div class="flex-row">
+                    <div class="testflex" style="flex: .5 20%;">
+                        <p class="menu_1">Confident:</p>
+                    </div>
+                    <div class="testflex" style="flex: 1 50%; justify-content: center;">
+                        <form style="width: 90%;" action="/set/confidence" method="post">
+                            <input name="confidence" type="number" min="0.5" max="1"
+                                   step="0.1"
+                                   value={{confidence}}>
+                        </form>
+                    </div>
+                    <div class="flex-item 2center">
+                        <input class="formButtonfront btn btn-info btn-sm" style="background-color: #000;"
+                               type="submit"
+                               value="Apply">
+                    </div>
+                </div>
+
+                <div class="flex-row">
+                    <div class="testflex" style="flex: .5 20%;">
+                        <p class="menu_1">Second per Frame:</p>
+                    </div>
+                    <div class="testflex" style="flex: 1 50%; justify-content: center;">
+                        <form style="width: 90%;" action="set/frame" method="post">
+
+                            <input name="frame" type="number" min="5" max="30"
+                                   step="1"
+                                   value={{sec_per_frame}}>
+                        </form>
+                    </div>
+                    <div class="flex-item 2center">
+                        <input class="formButtonfront btn btn-info" style="background-color: #000;"
+                               type="submit"
+                               value="Apply">
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <div style="display:flex; justify-content:center;">
+            <div style="width:80%;">
+                <div class="incontent2">
+
+                    <div class="testflex">
+                        <p class="menu_1">Detect Status:</p>
+                    </div>
+
+
+                    <div class="testflex">
+                        {% if status == 'off' %}
+                        <form action="/mode/on" method="post">
+                            <input id="detect-mode" class="btn btn-success"
+                                   style="background-color: #28a745;"
+                                   name="pass" type="submit" value="Turn ON">
+                        </form>
+                        {% else %}
+                        <form action="/mode/off" method="post">
+                            <input id="detect-mode" class="btn btn-danger"
+                                   style="background-color: #dc3545;"
+                                   name="pass" type="submit" value="Turn OFF">
+                        </form>
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div style="display:flex; justify-content:center;">
+            <div style="width:80%;">
+                <div class="incontent3">
+
+                    <div class="testflex">
+                        <p class="menu_1">
+                            Elasticsearch Status:
+                        </p>
+                    </div>
+                    <div class="testflex">
+                        {% if es_status %}
+
+                        <p class="menu_1" style="color: green">Connect</p>
+                        <p>{{es_ip}}</p>
+
+                        {% else %}
+                        <p class="menu_1" style="color: red">Disconnect</p>
+                        {%endif%}
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="flex-row" style="justify-content:center;">
+            <div class="flex-btm">
+                <form  action="/" method="post">
+                    <button class="btn btn-info bne1 formButtonfront" name="snap" type="submit" value="go2snap">
+                        Live
                     </button>
                 </form>
-
-            </td>
-            <td style="text-align: center;">
-                <form action="{{fullip}}">
-                    <button style="height:50px; width:50%;" type="submit" value="Mainpage">Back to Main Web</button>
+            </div>
+            <div class="flex-btm">
+                <form  action="{{fullip}}">
+                    <button class="btn btn-info btn-block bne1 formButtonfront" type="submit" value="Mainpage">
+                        Home
                 </form>
-            </td>
-        </tr>
-    </table>
-</div>
-</div>
+            </div>
 
+        </div>
+
+        <!--        <div class="row col s12" style="text-align=center;">-->
+        <!--            <div class="col s3"></div>-->
+        <!--            <div class="col s6">-->
+        <!--                <div id="low-bn">-->
+        <!--                    <div>-->
+        <!--                        <form action="/" method="post">-->
+        <!--                            <button class="btn btn-info bne1 formButtonfront" name="snap" type="submit" value="go2snap">-->
+        <!--                                Live-->
+        <!--                            </button>-->
+        <!--                        </form>-->
+        <!--                    </div>-->
+        <!--                    <div>-->
+        <!--                        <form action="{{fullip}}">-->
+        <!--                            <button class="btn btn-info btn-block bne1 formButtonfront" type="submit" value="Mainpage">-->
+        <!--                                Home-->
+        <!--                        </form>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+
+        <!--        </div>-->
+    </div>
+</div>
 </body>
 {% endblock %}
 </html>

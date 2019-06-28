@@ -13,9 +13,14 @@ class elas_api:
         self.ip = ip
         self.port = port
 
-        self._connectElas(ip=self.ip, port=self.port)
-        print(self.checkStatus())
+        self.preSomething()
 
+        self._connectElas(ip=self.ip, port=self.port)
+        # print(self.checkStatus())
+
+
+
+    def preSomething(self):
         self.es_index = 'pigeon-test'
         self.es_image = 'pigeon-image-test2'
 
@@ -35,18 +40,36 @@ class elas_api:
         self.months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
                        'August', 'September', 'October', 'November', 'December']
 
+        self.config = {
+            'retry_on_timeout': False,
+            'timeout': 10,
+            'max_retries': 0,
+
+        }
+
     def __connectElasNikko(self):
-        self.es = Elasticsearch([{'host': '192.168.1.29', 'port': 9200}], retry_on_timeout=True, timeout=10)
+        config = self.config
+        try:
+            self.es = Elasticsearch([{'host': '192.168.1.29', 'port': 9200}], **config)
         # self.es = Elasticsearch([{'host': '172.27.228.44', 'port': 9200}])
+        except:
+            print("Can't conection nikko")
 
     def _connectElas(self, ip=None, port=9200):
+        config = self.config
         if ip:
             assert ip is not str, 'Please Fill ip with String!!!'
-            self.es = Elasticsearch([{'host': ip, 'port': port}])
-            print('Connect to Elasticsearch, {}:{}'.format(ip, port))
+            try:
+                self.es = Elasticsearch([{'host': ip, 'port': port}], **config)
+                print('Connect to Elasticsearch, {}:{}'.format(ip, port))
+            except Exception as e:
+                print(e)
         else:
-            self.es = Elasticsearch()
-            print('Connect to local Elasticsearch')
+            try:
+                self.es = Elasticsearch(**config)
+                print('Connect to local Elasticsearch')
+            except Exception as e:
+                print(e)
 
     def checkStatus(self):
         if not self.es.ping():

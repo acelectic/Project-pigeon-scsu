@@ -1,0 +1,106 @@
+#head_1 {
+     margin: 1rem 0 0.8rem 0;
+     font-weight: bold;
+}
+
+.detect_status {
+    text-align: center;
+
+}
+.detect_status > p {
+    font-size: initial;
+}
+
+
+.formButtonfront {
+  border:1px solid gray;
+  border-radius:7%;
+  font-size:0.875;
+  word-wrap: break-word;
+  width: 100px; // only for IE8
+  max-width: 100%;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center;
+}
+#detect-mode{
+      border:1px solid gray;
+      border-radius:7%;
+      font-size:0.675;
+      word-wrap: break-word;
+      width: 100px; // only for IE8
+      max-width: 100%;
+
+}
+
+.elas-status {
+    font-weight: bold;
+}
+
+
+.menu_1 {
+    font-size:1.175rem;
+    font-weight: bold;
+}
+
+.2center {
+    align-items:center;
+}
+
+.box-input {
+    flex-grow: 1;
+}
+
+.flex-item, .flex-item-box{
+    text-align: right;
+    margin-left: .5rem;
+    flex-grow: .1;
+}
+.flex-item-box {
+    flex-grow: 1;
+}
+
+.config-zone {
+   display: flex; /* or inline-flex */
+    justify-content:space-between;
+
+   align-items:center;
+}
+#low-bn{
+    display:flex;
+    justify-content:space-evenly;
+    flex-grow: 1;
+}
+
+.incontent2 {
+   display: flex; /* or inline-flex */
+   align-items:center;
+   flex-flow: row;
+}
+.incontent3 {
+   display: flex; /* or inline-flex */
+   align-items:center;
+   flex-flow: row;
+}
+.testflex1 {
+display: flex;
+
+flex: 1;
+}
+
+.testflex {
+display: flex;
+
+flex: 1;
+}
+.flex-row{
+    display: flex;
+    flex-flow: row;
+    align-items:center;
+}
+.flex-btm{
+    display: flex;
+    margin: 1rem;
+}

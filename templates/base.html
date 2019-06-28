@@ -1,20 +1,54 @@
 <!doctype html>
 <html>
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-    <title>Raspberry pi controller</title>
+<!--    <link rel="stylesheet" href="{{ url_for('static', filename='miniBear.css') }}">-->
+    <!-- Start your project here-->
+    <!--    <meta charset="utf-8">-->
+    <!--    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
+    <!--    <meta http-equiv="x-ua-compatible" content="ie=edge">-->
+
+    <!--    &lt;!&ndash; Font Awesome &ndash;&gt;-->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!--    &lt;!&ndash; Bootstrap core CSS &ndash;&gt;-->
+<!--        <link href="static/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--    &lt;!&ndash; Material Design Bootstrap &ndash;&gt;-->
+<!--        <link href="static/css/mdb.min.css" rel="stylesheet">-->
+    <!--    &lt;!&ndash; Your custom styles (optional) &ndash;&gt;-->
+        <link href="static/css/style.css" rel="stylesheet">
+
+    <link href="static/css/materialize.css" rel="stylesheet">
+    <link href="static/css/materialize.min.css" rel="stylesheet">
+
+    <!-- SCRIPTS -->
+    <!-- JQuery -->
+        <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
+        <!-- Bootstrap tooltips -->
+        <script type="text/javascript" src="static/js/popper.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="static/js/mdb.min.js"></script>
+
+    <script type="text/javascript" src="static/js/materialize.min.js"></script>
+
+
+    <title>Jetson Nano controller</title>
 
 </head>
 <body>
-<div class="clock2"><a style="text-decoration:none;">
-    <iframe src="http://free.timeanddate.com/clock/i6stpmjb/n28/fn14/fs18/tct/ahr/ftb/pa10/tt0/tw1/td2/th1/ta1/tb3"
-            frameborder="0" width="428" height="42" allowTransparency="true"></iframe>
+<div class="row"></div>
+<div class="row" style="text-align:right">
+    <div class="col s12 m12 l12"><a style="text-decoration:none;">
+        <iframe src="http://free.timeanddate.com/clock/i6stpmjb/n28/fn14/fs18/tct/ahr/ftb/pa10/tt0/tw1/td2/th1/ta1/tb3"
+                frameborder="0" width="428" height="42" allowTransparency="true"></iframe>
+    </div>
 </div>
-<div id="content">{% block content %}
-    {% endblock %}
+<div class="container">
+
+    <div id="content">{% block content %}
+        {% endblock %}
+    </div>
+
 </div>
-
-
-
 </body>
 </html>

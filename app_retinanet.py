@@ -16,10 +16,12 @@ from until.elas_api import elas_api
 
 es_ip = '192.168.1.29'
 es_port = 9200
-es = elas_api(ip=es_ip)
+# es = elas_api(ip=es_ip)
+es_status = None
+# es_status = es.checkStatus()[0]
 
 app = Flask(__name__)
-es_status = es.checkStatus()[0]
+
 status = False
 confidence = 0.5
 sec_per_frame = 5
@@ -68,7 +70,7 @@ def mode(subpath):
     if subpath == 'off':
         if status:
             p.terminate()
-            print('Detect ON')
+            print('Detect Off')
             status = False
             # return "Detect OFF"
         # else:
@@ -82,6 +84,7 @@ def mode(subpath):
             status = True
             p = Process(target=run, args=())
             p.start()
+            print('Detect On')
             # return 'Detect ON'
 
     return redirect(url_for('index'))
@@ -111,37 +114,38 @@ def snap(ip='127.0.0.1'):
 
 
 def run(vdo_=0):
-    from retinanet import retinanet_model
-    retinanet = retinanet_model.Model(confidence=confidence)
-
-    print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format('', 'Detect ON', '', confidence, sec_per_frame))
-
-    status_detect = False
-
-    def task_deley():
-        global status_detect
-        status_detect = False
-        print('Detect status: {}'.format(status_detect))
-
-    scheduler = BackgroundScheduler(timezone=get_localzone())
-    scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
-    scheduler.start()
-    # vdo_ = 'video/YouTube4.mp4'
+    # from retinanet import retinanet_model
+    # retinanet = retinanet_model.Model(confidence=confidence)
+    #
+    # print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format('', 'Detect ON', '', confidence, sec_per_frame))
+    #
+    # status_detect = False
+    #
+    # def task_deley():
+    #     global status_detect
+    #     status_detect = False
+    #     print('Detect status: {}'.format(status_detect))
+    #
+    # scheduler = BackgroundScheduler(timezone=get_localzone())
+    # scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
+    # scheduler.start()
+    # # vdo_ = 'video/YouTube4.mp4'
+    # # cap = cv2.VideoCapture(vdo_)
     # cap = cv2.VideoCapture(vdo_)
-    cap = cv2.VideoCapture(vdo_)
-
-    while True:
-        _, frame = cap.read()
-        if _ and status_detect:
-            retinanet.detect(frame)
-            print("loop running")
-
-    cap.release()
+    #
+    # while True:
+    #     _, frame = cap.read()
+    #     if _ and status_detect:
+    #         retinanet.detect(frame)
+    #         print("loop running")
+    #
+    # cap.release()
 
     global status
     status = False
-    return redirect(url_for('index'))
+    # return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    # app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
