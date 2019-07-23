@@ -4,12 +4,10 @@
 
 {% block content %}
 <body>
-
 <!-- Page Content goes here -->
-
 <div class="head1">
-    <h1 id="head_1">Fending out Pigeon</h1>
-    <script type="text/javascript" src="static/main.js"></script>
+    <h1  class="head_1">Fending out Pigeon</h1>
+
 </div>
 <div class="divider"></div>
 <div>
@@ -22,15 +20,13 @@
                     </div>
                     <div class="testflex" style="flex: 1 50%; justify-content: center;">
                         <form style="width: 90%;" action="/set/confidence" method="post">
-                            <input name="confidence" type="number" min="0.5" max="1"
+                            <input id="_confidence" name="confidence" type="number" min="0.5" max="1"
                                    step="0.1"
                                    value={{confidence}}>
                         </form>
                     </div>
                     <div class="flex-item 2center">
-                        <input class="formButtonfront btn btn-info btn-sm" style="background-color: #000;"
-                               type="submit"
-                               value="Apply">
+                        <button class="formButtonfront btn btn-info btn-sm" style="background-color: #000;" onclick="setConfidence()">Apply</button>
                     </div>
                 </div>
 
@@ -39,18 +35,16 @@
                         <p class="menu_1">Second per Frame:</p>
                     </div>
                     <div class="testflex" style="flex: 1 50%; justify-content: center;">
-                        <form style="width: 90%;" action="set/frame" method="post">
-
-                            <input name="frame" type="number" min="5" max="30"
+                        <form  style="width: 90%;" action="set/frame" method="post">
+                            <input id="_frame" name="frame" type="number" min="5" max="30"
                                    step="1"
                                    value={{sec_per_frame}}>
                         </form>
                     </div>
-                    <div class="flex-item 2center">
-                        <input class="formButtonfront btn btn-info" style="background-color: #000;"
-                               type="submit"
-                               value="Apply">
+                     <div class="flex-item 2center">
+                        <button id="send_frame" class="formButtonfront btn btn-info" onclick="setFrame()" style="background-color: #000;">Apply</button>
                     </div>
+
                 </div>
             </div>
 
@@ -67,18 +61,32 @@
 
                     <div class="testflex">
                         {% if status == 'off' %}
-                        <form action="/mode/on" method="post">
-                            <input id="detect-mode" class="btn btn-success"
+             
+                            <button id="detect-mode" class="btn btn-success"
                                    style="background-color: #28a745;"
-                                   name="pass" type="submit" value="Turn ON">
-                        </form>
+                                   onclick="toggleDetect()">Turn ON</button>
+         
                         {% else %}
-                        <form action="/mode/off" method="post">
-                            <input id="detect-mode" class="btn btn-danger"
+                      
+                            <button id="detect-mode" class="btn btn-danger"
                                    style="background-color: #dc3545;"
-                                   name="pass" type="submit" value="Turn OFF">
-                        </form>
+                                    onclick="toggleDetect()">Turn OFF</button>
+
                         {%endif%}
+<!--                            <div class="onoffswitch">
+                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked onclick="toggleDetect()">
+                                <label class="onoffswitch-label" for="myonoffswitch">
+                                    <span id="tmp_of" class="onoffswitch-inner"></span>
+                                    <span id="tmp_la" class="onoffswitch-switch"></span>
+                                </label>
+                            </div> -->
+
+                            <!-- <label class="switch switch-left-right">
+                                <input class="switch-input" type="checkbox" />
+                                <span class="switch-label" data-on="On" data-off="Off"></span> 
+                                <span class="switch-handle"></span> 
+                            </label> -->
+
                     </div>
                 </div>
             </div>
@@ -127,30 +135,9 @@
             </div>
 
         </div>
-
-        <!--        <div class="row col s12" style="text-align=center;">-->
-        <!--            <div class="col s3"></div>-->
-        <!--            <div class="col s6">-->
-        <!--                <div id="low-bn">-->
-        <!--                    <div>-->
-        <!--                        <form action="/" method="post">-->
-        <!--                            <button class="btn btn-info bne1 formButtonfront" name="snap" type="submit" value="go2snap">-->
-        <!--                                Live-->
-        <!--                            </button>-->
-        <!--                        </form>-->
-        <!--                    </div>-->
-        <!--                    <div>-->
-        <!--                        <form action="{{fullip}}">-->
-        <!--                            <button class="btn btn-info btn-block bne1 formButtonfront" type="submit" value="Mainpage">-->
-        <!--                                Home-->
-        <!--                        </form>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-
-        <!--        </div>-->
     </div>
 </div>
 </body>
+
 {% endblock %}
 </html>

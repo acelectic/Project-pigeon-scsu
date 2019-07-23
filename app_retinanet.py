@@ -70,9 +70,8 @@ def mode(subpath):
     if subpath == 'off':
         if status:
             p.terminate()
-            print('Detect Off')
             status = False
-            # return "Detect OFF"
+            print('Detect Off')
         # else:
         # return 'Detect is already OFF'
 
@@ -85,21 +84,28 @@ def mode(subpath):
             p = Process(target=run, args=())
             p.start()
             print('Detect On')
-            # return 'Detect ON'
 
     return redirect(url_for('index'))
+@app.route('/detectStatus', methods=["POST"])
+def getDetectStatus():
+    global status
+    print('check status: {}'.format( 'on' if status else 'off'))
+    return 'on' if status else 'off'
 
 
 @app.route('/set/<path:subpath>', methods=["POST"])
 def set(subpath):
-    global detect_every_frame, confidence
+    global sec_per_frame, confidence
     # print(request.form['frame'])
     try:
         data = request.get_json(force=True)
     except:
         data = request.form
+
+    print(data)
     if subpath == 'frame':
-        detect_every_frame = data['frame']
+        sec_per_frame = data['frame']
+        print(sec_per_frame)
 
     elif subpath == 'confidence':
         confidence = data['confidence']
@@ -147,5 +153,5 @@ def run(vdo_=0):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
-    # app.run(host='0.0.0.0', debug=True)
+    # app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)

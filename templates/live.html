@@ -3,13 +3,27 @@
 <html>
 {% block content %}
 <body>
-<h1>Video Streaming Demonstration</h1>
-<form id="LivetoMain" action="/">
-    <input type="submit" value="Mainpage">
-</form>
-<div class="livesteam">
-    <img src="{{ url_for('video_feed') }}" height="720">
+<div class="head1">
+    <h1  class="head_1">Video Streaming Demonstration</h1>
 </div>
+<div class="divider" style=" margin: 20px"></div>
+ <div class="flex-row" style="justify-content:center;"style="align-text:center;">
+    <img src="{{ url_for('video_feed') }}">
+</div>
+<div class="flex-row" style="justify-content:center;">
+    <div class="flex-btm">
+        <form  action="/" method="post">
+            <button class="btn btn-info bne1 formButtonfront" name="snap" type="submit" value="">
+                Back
+            </button>
+        </form>
+    </div>
+</div>
+
+
+
+
+
 
 <!--<img src={{imgdir}}>-->
 </body>
