@@ -27,8 +27,8 @@ class Model:
         # labels_to_names = {0: 'Pigeon'}
         # print('model confidence:', self.confThreshold)
 
-        # self.time2store = self.gen_datetime()
-        self.time2store = datetime.now()
+
+
         self.__data4turret = None
         self.__lastFrame = np.zeros((600, 800, 1))
 
@@ -41,6 +41,7 @@ class Model:
             self.es_status = False
         else:
             self.es_status = True
+            self.es = es
 
         self.es_mode = es_mode
 
@@ -49,6 +50,9 @@ class Model:
         self.model = load_model(
             r'C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\retinanet\model\resnet50_coco_best_v2.1.0.h5',
             backbone_name='resnet50')
+        # self.model = load_model(
+        #     r'C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\retinanet\model\model.h5',
+        #     backbone_name='resnet50')
 
         self.labels_to_names = {0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus',
                                 6: 'train',
@@ -80,15 +84,21 @@ class Model:
 
     def gen_datetime(self):
         return radar.random_date(
-            start=datetime(year=2019, month=6, day=1),
-            stop=datetime(year=2019, month=6, day=17))
+            start=datetime(year=2019, month=1, day=1),
+            stop=datetime(year=2019, month=7, day=23))
 
     def detect(self, image):
+
+        self.time2store = self.gen_datetime()
+        # self.time2store = datetime.now()
+
+
         # copy to draw on
         draw = image.copy()
 
         # preprocess image for network
         image = preprocess_image(image)
+        cv2.imshow('ss22', image)
         image, scale = resize_image(image, min_side=self.min_side4train, max_side=self.max_side4train)
 
         time_ = self.time2store
@@ -150,7 +160,7 @@ class Model:
         print()
         if self.es_mode and self.es_status:
             self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
-        return 'Now: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(),
+        return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
                                                                               eventid, len(boxes), processing_time,
                                                                               '\n{:#>20} {} {:#<20}'.format('',
                                                                                                             'END 1 FRAME',
@@ -180,20 +190,24 @@ class Model:
         self.confThreshold = float(confidence)
 
 
-import cv2
-
-if __name__ == '__main__':
-    detect_model = Model()
-    img = cv2.VideoCapture(0)
-    while 1:
-        _, frame = img.read()
-
-        if _:
-            detect_model.detect(frame)
-
-            turretData = detect_model.getDataTurret()
-            print(turretData)
-            img_ = detect_model._getlastFrame()
-            img_ = cv2.drawMarker(img_, turretData['centroid'], color=(255, 125, 128), markerSize=4)
-            cv2.imshow('turret', img_)
-            cv2.waitKey()
+# import cv2
+#
+# if __name__ == '__main__':
+#     detect_model = Model()
+#
+#     # img = cv2.VideoCapture(r"C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\vdo\video_25620705_061211.mp4")
+#     img = cv2.VideoCapture(0)
+#     while 1:
+#         _, frame = img.read()
+#
+#         if _:
+#             detect_model.detect(frame)
+#
+#             turretData = detect_model.getDataTurret()
+#             print(turretData)
+#             img_ = detect_model._getlastFrame()
+#             img_ = cv2.drawMarker(img_, turretData['centroid'], color=(255, 125, 128), markerSize=4)
+#             cv2.imshow('turret', img_)
+#
+#             # cv2.imshow('sss', frame)
+#             cv2.waitKey()
