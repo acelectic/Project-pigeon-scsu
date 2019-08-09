@@ -54,19 +54,22 @@ class camera_control():
         next_angle = self.vertical_angle - self.step_angle
         if  next_angle > self.min_angle:
             self.__moveVertical(next_angle)
+            self.vertical_angle = next_angle
 
     def rotateRight(self):
         next_angle = self.vertical_angle + self.step_angle
         if  next_angle < self.max_angle:
             self.__moveVertical(next_angle)
+            self.vertical_angle = next_angle
 
     def rotateDown(self):
         next_angle = self.horizontal_angle - self.step_angle
         if  next_angle > self.min_angle:
             self.__moveHorizontal(next_angle)
+            self.horizontal_angle = next_angle
 
     def rotateUp(self):
         next_angle = self.horizontal_angle - self.step_angle
         if  next_angle < self.max_angle:
             self.__moveHorizontal(next_angle)
-
+            self.horizontal_angle = next_angle
