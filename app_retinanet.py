@@ -149,6 +149,10 @@ def camera_command():
     elif cmd == 'Down':
         cam_api.rotateDown()
         print(cmd)
+    elif cmd == 'Down':
+        cam_api._setDefault()
+        print(cmd)
+
 
     headers = {"Content-Type": "application/json"}
 
