@@ -149,7 +149,7 @@ def camera_command():
     elif cmd == 'Down':
         cam_api.rotateDown()
         print(cmd)
-    elif cmd == 'Down':
+    elif cmd == 'Dafault':
         cam_api._setDefault()
         print(cmd)
 
