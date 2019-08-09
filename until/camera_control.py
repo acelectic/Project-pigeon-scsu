@@ -26,7 +26,7 @@ class camera_control():
 
         self.vertical_angle = self.default_angle
         self.horizontal_angle = self.default_angle
-        self.step_angle = 1
+        self.step_angle = 5
 
         self.max_angle = 170
         self.min_angle = 10
@@ -40,11 +40,11 @@ class camera_control():
 
     def __moveVertical(self, angle):
         self.kit.servo[0].angle = angle
-        time.sleep(0.02)
+        time.sleep(0.5)
 
     def __moveHorizontal(self, angle):
         self.kit.servo[0].angle = angle
-        time.sleep(0.02)
+        time.sleep(0.5)
 
     def _setDefault(self):
         self.__moveHorizontal(angle=90)
