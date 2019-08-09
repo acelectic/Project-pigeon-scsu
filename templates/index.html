@@ -105,8 +105,7 @@
                     <div class="testflex">
                         {% if es_status %}
 
-                        <p class="menu_1" style="color: green">Connect</p>
-                        <p>{{es_ip}}</p>
+                        <p class="menu_1" style="color: green">Connect: {{es_ip}}</p>
 
                         {% else %}
                         <p class="menu_1" style="color: red">Disconnect</p>
@@ -122,7 +121,7 @@
         <div class="flex-row" style="justify-content:center;">
             <div class="flex-btm">
                 <form  action="/" method="post">
-                    <button class="btn btn-info bne1 formButtonfront" name="snap" type="submit" value="go2snap">
+                    <button class="btn btn-info bne1 formButtonfront" name="live" type="submit" value="live_camera">
                         Live
                     </button>
                 </form>

@@ -10,11 +10,15 @@ from keras_retinanet.utils.colors import label_color
 from keras_retinanet.utils.image import preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 
+import cv2
 
 # thai_timezone = pytz.timezone('Asia/Bangkok')
 
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False):
+
+        self.cen_x = 0
+        self.cen_y = 0
 
         # Size image for train on retinenet
         self.min_side4train = 600
@@ -74,6 +78,56 @@ class Model:
                                 77: 'teddy bear',
                                 78: 'hair drier', 79: 'toothbrush'}
 
+    def create_Tracker(self , bbox, frame):
+        trackerTypes = ['BOOSTING', 'MIL', 'KCF', 'TLD', 'MEDIANFLOW', 'GOTURN', 'MOSSE', 'CSRT']
+
+        def createTrackerByName(trackerType):
+            # Create a tracker based on tracker name
+            if trackerType == trackerTypes[0]:
+                tracker = cv2.TrackerBoosting_create()
+            elif trackerType == trackerTypes[1]:
+                tracker = cv2.TrackerMIL_create()
+            elif trackerType == trackerTypes[2]:
+                tracker = cv2.TrackerKCF_create()
+            elif trackerType == trackerTypes[3]:
+                tracker = cv2.TrackerTLD_create()
+            elif trackerType == trackerTypes[4]:
+                tracker = cv2.TrackerMedianFlow_create()
+            elif trackerType == trackerTypes[5]:
+                tracker = cv2.TrackerGOTURN_create()
+            elif trackerType == trackerTypes[6]:
+                tracker = cv2.TrackerMOSSE_create()
+            elif trackerType == trackerTypes[7]:
+                tracker = cv2.TrackerCSRT_create()
+            else:
+                tracker = None
+                print('Incorrect tracker name')
+                print('Available trackers are:')
+                for t in trackerTypes:
+                    print(t)
+
+            return tracker
+
+        bboxes = [bbox]
+        # Specify the tracker type
+        trackerType = "CSRT"
+
+        # Create MultiTracker object
+        self.__multiTracker = cv2.MultiTracker_create()
+        # Initialize MultiTracker
+        for bbox in bboxes:
+            self.__multiTracker .add(createTrackerByName(trackerType), frame, bbox)
+
+    def _updateTracker(self, frame):
+        success, boxes = self.__multiTracker.update(frame)
+
+        # draw tracked objects
+        for i, newbox in enumerate(boxes):
+            p1 = (int(newbox[0]), int(newbox[1]))
+            p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
+            cv2.rectangle(frame, p1, p2, (255, 0 , 0), 2, 1)
+
+
     def gen_datetime(self, from_date, to_date):
 
         from_date = from_date.split('-')
@@ -92,6 +146,8 @@ class Model:
         self.time2store = self.gen_datetime()
         # self.time2store = datetime.now()
 
+        self.cen_x = image.shape[0]
+        self.cen_y = image.shape[1]
 
         # copy to draw on
         draw = image.copy()
@@ -160,11 +216,21 @@ class Model:
         print()
         if self.es_mode and self.es_status:
             self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
-        return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
-                                                                              eventid, len(boxes), processing_time,
-                                                                              '\n{:#>20} {} {:#<20}'.format('',
-                                                                                                            'END 1 FRAME',
-                                                                                                            ''))
+
+        self.__shot(boxes[0][0])
+
+        print('Head Shot')
+        # return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
+        #                                                                       eventid, len(boxes), processing_time,
+        #                                                                       '\n{:#>20} {} {:#<20}'.format('',
+        #                                                                                                     'END 1 FRAME',
+        #
+        #                                                                                                     ''))
+        return boxes[0][0]
+
+    def __shot(self, target_box):
+
+
 
     def getCentroid(self, box):
         return (int((box[0] + box[2])/2), int((box[1] + box[3])/2))
@@ -188,6 +254,9 @@ class Model:
     def setConfidence(self, confidence):
         print("confident: {} ---> {}".format(self.confThreshold, confidence))
         self.confThreshold = float(confidence)
+
+    def testDetect(self):
+        return 'num {}'.format(datetime.now())
 
 
 # import cv2

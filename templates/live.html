@@ -13,13 +13,41 @@
 <div class="flex-row" style="justify-content:center;">
     <div class="flex-btm">
         <form  action="/" method="post">
-            <button class="btn btn-info bne1 formButtonfront" name="snap" type="submit" value="">
+            <button class="btn btn-info bne1 formButtonfront" type="submit" >
                 Back
             </button>
         </form>
     </div>
 </div>
+<div class="flex-row" style="justify-content:center;">
+    <div class="flex-btm">
+        <button class="btn btn-info bne1 formButtonfront" name="camera_control">Left</button>
+        <button class="btn btn-info bne1 formButtonfront" name="camera_control">Right</button>
+        <button class="btn btn-info bne1 formButtonfront" name="camera_control">Up</button>
+        <button class="btn btn-info bne1 formButtonfront" name="camera_control">Down</button>
+    </div>
+</div>
 
+<script>
+
+    $('button[name="camera_control"]').click(function(e){
+<!--      e.preventDefault(); // The flicker is a codepen thing-->
+      var tmp =  $(this).html();
+     $.ajax({type:'POST',
+            url:'/camera_command',
+            cache: false,
+            data: {'cmd':tmp},
+        timeout: 10000,
+        error: function(){
+            console.log("command error: " + tmp);
+<!--            return true;-->
+        },
+        success: function(msg){
+            console.log("rotate camera" + tmp);
+        }});
+    });
+
+</script>
 
 
 
