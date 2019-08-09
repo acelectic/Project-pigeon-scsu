@@ -43,11 +43,12 @@ class camera_control():
         time.sleep(0.5)
 
     def __moveHorizontal(self, angle):
-        self.kit.servo[0].angle = angle
+        self.kit.servo[1].angle = angle
         time.sleep(0.5)
 
     def _setDefault(self):
         self.__moveHorizontal(angle=90)
+        time.sleep(1)
         self.__moveVertical(angle=90)
 
     def rotateLeft(self):
