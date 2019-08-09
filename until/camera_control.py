@@ -40,37 +40,43 @@ class camera_control():
 
     def __moveVertical(self, angle):
         self.kit.servo[0].angle = angle
+        self.vertical_angle = angle
         time.sleep(0.5)
 
     def __moveHorizontal(self, angle):
         self.kit.servo[1].angle = angle
+        self.horizontal_angle = angle
         time.sleep(0.5)
 
     def _setDefault(self):
-        self.__moveHorizontal(angle=90)
+        self.__moveHorizontal(angle=self.default_angle)
         time.sleep(1)
-        self.__moveVertical(angle=90)
+        self.__moveVertical(angle=self.default_angle)
+
+    def rotateToDefault(self):
+        self.__moveHorizontal(angle=self.default_angle)
+        time.sleep(1)
+        self.__moveVertical(angle=self.default_angle)
+        time.sleep(1)
 
     def rotateLeft(self):
         next_angle = self.vertical_angle - self.step_angle
         if  next_angle > self.min_angle:
             self.__moveVertical(next_angle)
-            self.vertical_angle = next_angle
+
 
     def rotateRight(self):
         next_angle = self.vertical_angle + self.step_angle
         if  next_angle < self.max_angle:
             self.__moveVertical(next_angle)
-            self.vertical_angle = next_angle
 
     def rotateDown(self):
         next_angle = self.horizontal_angle - self.step_angle
         if  next_angle > self.min_angle:
             self.__moveHorizontal(next_angle)
-            self.horizontal_angle = next_angle
+
 
     def rotateUp(self):
         next_angle = self.horizontal_angle - self.step_angle
         if  next_angle < self.max_angle:
             self.__moveHorizontal(next_angle)
-            self.horizontal_angle = next_angle
