@@ -15,7 +15,8 @@ import cv2
 # thai_timezone = pytz.timezone('Asia/Bangkok')
 
 class Model:
-    def __init__(self, confidence=0.5, es=None, es_mode=False):
+    def __init__(self, confidence=0.5, es=None, es_mode=False, cam_api=None):
+        self._cam_api = cam_api
 
         self.cen_x = 0
         self.cen_y = 0
@@ -30,8 +31,6 @@ class Model:
 
         # labels_to_names = {0: 'Pigeon'}
         # print('model confidence:', self.confThreshold)
-
-
 
         self.__data4turret = None
         self.__lastFrame = np.zeros((600, 800, 1))
@@ -108,6 +107,8 @@ class Model:
 
             return tracker
 
+        self.__old_cenTroid = (int(bbox[0]+bbox[2]/2), int(bbox[1]+bbox[3]/2))
+        print('start: ', bbox, '\tcentroid:', self.__old_cenTroid)
         bboxes = [bbox]
         # Specify the tracker type
         trackerType = "CSRT"
@@ -116,17 +117,48 @@ class Model:
         self.__multiTracker = cv2.MultiTracker_create()
         # Initialize MultiTracker
         for bbox in bboxes:
-            self.__multiTracker .add(createTrackerByName(trackerType), frame, bbox)
+            self.__multiTracker.add(createTrackerByName(trackerType), frame, bbox)
 
     def _updateTracker(self, frame):
         success, boxes = self.__multiTracker.update(frame)
-
+        print('tracker{}'.format(boxes))
         # draw tracked objects
         for i, newbox in enumerate(boxes):
-            p1 = (int(newbox[0]), int(newbox[1]))
-            p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
-            cv2.rectangle(frame, p1, p2, (255, 0 , 0), 2, 1)
 
+            # p1 = (int(newbox[0]), int(newbox[1]))
+            # p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
+            self.__new_cenTroid = (int(newbox[0]) + int(newbox[2]/2), int(newbox[1])+ int(newbox[3]/2))
+            print(self.__new_cenTroid)
+            self.moveCamera(self.calMove(old_cenTroid=self.__old_cenTroid, new_cenTroid=self.__new_cenTroid))
+        return self.stopmove(self.__new_cenTroid)
+    def stopmove(self, new_cenTroid):
+        stop_distance = 20
+        new_x, new_y = new_cenTroid
+
+        dis_x = abs(self.cen_x - new_x)
+        dis_y = abs(self.cen_y - new_y)
+
+        return 'Stop' if dis_x <= stop_distance and dis_y <= stop_distance else 'Continue'
+
+
+    def moveCamera(self, command):
+        cam_api = self._cam_api
+        v, h = command
+        if v == 'Left':
+            cam_api.rotateLeft()
+        elif v == 'Right':
+            cam_api.rotateRight()
+
+        if h == 'Up':
+            cam_api.rotateUp()
+        elif h == 'Down':
+            cam_api.rotateDown()
+
+    def calMove(self, old_cenTroid, new_cenTroid):
+        old_x, old_y = old_cenTroid
+        new_x, new_y = new_cenTroid
+
+        return 'Left' if new_x > old_x else 'Right', 'Up' if new_y < old_y else 'Down'
 
     def gen_datetime(self, from_date, to_date):
 
@@ -146,25 +178,21 @@ class Model:
         self.time2store = self.gen_datetime()
         # self.time2store = datetime.now()
 
-        self.cen_x = image.shape[0]
-        self.cen_y = image.shape[1]
+        self.cen_x = image.shape[1]//2
+        self.cen_y = image.shape[0]//2
 
         # copy to draw on
         draw = image.copy()
 
         # preprocess image for network
         image = preprocess_image(image)
-        cv2.imshow('ss22', image)
+        # cv2.imshow('ss22', image)
         image, scale = resize_image(image, min_side=self.min_side4train, max_side=self.max_side4train)
 
         time_ = self.time2store
         # time_ = datetime.now()
 
         eventid = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
-        # print('imgae_id', eventid)
-        # print('time', time_)
-        # print('local', self.localtimezone(time_))
-        # print('utc',  self.utctimezone(time_))
 
         # process image
         start = time.time()
@@ -175,16 +203,18 @@ class Model:
         img4elas, scale4elas = resize_image(draw, min_side=self.min_side4elas, max_side=self.max_side4elas)
 
         # correct for image scale
-        boxes /= scale4elas
+        # boxes /= scale
+        box4turret = boxes/scale
         found_ = {}
 
         main_body = {'eventid': eventid, 'time_': time_}
         self.__data4turret = {
-            "box": boxes[0][0],
+            "box": box4turret[0][0],
             "score": scores[0][0],
             "label": labels[0][0],
             "scale": scale,
             "raw_image-shape": draw.shape}
+
         # visualize detections
         index = 1
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
@@ -198,7 +228,7 @@ class Model:
 
             draw_box(img4elas, b, color=color)
 
-            caption = "{} {:.3f}".format(self.labels_to_names[label], score)
+            caption = "{} {:.3f} {}".format(self.labels_to_names[label], score, box)
             # print(caption)
             draw_caption(img4elas, b, caption)
             box = [np.ushort(x).item() for x in box]
@@ -213,11 +243,10 @@ class Model:
             index += 1
 
         self.__updatelastFrame(img4elas)
-        print()
+
         if self.es_mode and self.es_status:
             self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
-
-        self.__shot(boxes[0][0])
+            # self.es.elas_date(**main_body)
 
         print('Head Shot')
         # return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
@@ -225,11 +254,15 @@ class Model:
         #                                                                       '\n{:#>20} {} {:#<20}'.format('',
         #                                                                                                     'END 1 FRAME',
         #
-        #                                                                                                     ''))
-        return boxes[0][0]
+        #                                                                                              ''))
+        print("box[0][0]:{}".format(box4turret[0][0]))
+        return self.box2tupple(box4turret[0][0])
+
+    def box2tupple(self, box):
+        return (box[0], box[1], abs(box[2]-box[0]), abs(box[3]-box[1]))
 
     def __shot(self, target_box):
-
+        pass
 
 
     def getCentroid(self, box):
@@ -245,7 +278,6 @@ class Model:
         tmp = self.__data4turret
         data = tmp
         data['centroid']= self.getCentroid(tmp['box'])
-
         return data
 
     def _sentdata2turret(self):
@@ -260,9 +292,10 @@ class Model:
 
 
 # import cv2
-#
+# from until.elas_api import elas_api
 # if __name__ == '__main__':
-#     detect_model = Model()
+#     es = elas_api(ip = '192.168.1.29')
+#     detect_model = Model(es=es, es_mode=True)
 #
 #     # img = cv2.VideoCapture(r"C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\vdo\video_25620705_061211.mp4")
 #     img = cv2.VideoCapture(0)
@@ -271,7 +304,6 @@ class Model:
 #
 #         if _:
 #             detect_model.detect(frame)
-#
 #             turretData = detect_model.getDataTurret()
 #             print(turretData)
 #             img_ = detect_model._getlastFrame()

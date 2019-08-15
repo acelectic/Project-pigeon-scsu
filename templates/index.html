@@ -4,75 +4,75 @@
 
 {% block content %}
 <body>
-<!-- Page Content goes here -->
-<div class="head1">
-    <h1  class="head_1">Fending out Pigeon</h1>
+    <!-- Page Content goes here -->
+    <div class="head1">
+        <h1  class="head_1">Fending out Pigeon</h1>
 
-</div>
-<div class="divider"></div>
-<div>
-    <div id="in-content" style="width:80%;">
-        <section style="display:flex;   flex-direction: column;">
-            <div>
-                <div class="flex-row">
-                    <div class="testflex" style="flex: .5 20%;">
-                        <p class="menu_1">Confident:</p>
+    </div>
+    <div class="divider"></div>
+    <div>
+        <div id="in-content" style="width:80%;">
+            <section style="display:flex;   flex-direction: column;">
+                <div>
+                    <div class="flex-row">
+                        <div class="testflex" style="flex: .5 20%;">
+                            <p class="menu_1">Confident:</p>
+                        </div>
+                        <div class="testflex" style="flex: 1 50%; justify-content: center;">
+                            <form style="width: 90%;" action="/set/confidence" method="post">
+                                <input id="_confidence" name="confidence" type="number" min="0.5" max="1"
+                                step="0.1"
+                                value={{confidence}}>
+                            </form>
+                        </div>
+                        <div class="flex-item 2center">
+                            <button id="set_confidence_btn" class="formButtonfront btn btn-info btn-sm" style="background-color: #000;">Apply</button>
+                        </div>
                     </div>
-                    <div class="testflex" style="flex: 1 50%; justify-content: center;">
-                        <form style="width: 90%;" action="/set/confidence" method="post">
-                            <input id="_confidence" name="confidence" type="number" min="0.5" max="1"
-                                   step="0.1"
-                                   value={{confidence}}>
-                        </form>
-                    </div>
-                    <div class="flex-item 2center">
-                        <button class="formButtonfront btn btn-info btn-sm" style="background-color: #000;" onclick="setConfidence()">Apply</button>
+
+                    <div class="flex-row">
+                        <div class="testflex" style="flex: .5 20%;">
+                            <p class="menu_1">Second per Frame:</p>
+                        </div>
+                        <div class="testflex" style="flex: 1 50%; justify-content: center;">
+                            <form  style="width: 90%;" action="set/frame" method="post">
+                                <input id="_frame" name="frame" type="number" min="5" max="30"
+                                step="1"
+                                value={{sec_per_frame}}>
+                            </form>
+                        </div>
+                        <div class="flex-item 2center">
+                            <button id="set_frame_btn" class="formButtonfront btn btn-info" style="background-color: #000;">Apply</button>
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="flex-row">
-                    <div class="testflex" style="flex: .5 20%;">
-                        <p class="menu_1">Second per Frame:</p>
-                    </div>
-                    <div class="testflex" style="flex: 1 50%; justify-content: center;">
-                        <form  style="width: 90%;" action="set/frame" method="post">
-                            <input id="_frame" name="frame" type="number" min="5" max="30"
-                                   step="1"
-                                   value={{sec_per_frame}}>
-                        </form>
-                    </div>
-                     <div class="flex-item 2center">
-                        <button id="send_frame" class="formButtonfront btn btn-info" onclick="setFrame()" style="background-color: #000;">Apply</button>
-                    </div>
+            </section>
 
-                </div>
-            </div>
+            <div style="display:flex; justify-content:center;">
+                <div style="width:80%;">
+                    <div class="incontent2">
 
-        </section>
-
-        <div style="display:flex; justify-content:center;">
-            <div style="width:80%;">
-                <div class="incontent2">
-
-                    <div class="testflex">
-                        <p class="menu_1">Detect Status:</p>
-                    </div>
+                        <div class="testflex">
+                            <p class="menu_1">Detect Status:</p>
+                        </div>
 
 
-                    <div class="testflex">
-                        {% if status == 'off' %}
-             
+                        <div id="d-content" class="testflex">
+                  <!--       {% if status == 'off' %}
+
                             <button id="detect-mode" class="btn btn-success"
-                                   style="background-color: #28a745;"
-                                   onclick="toggleDetect()">Turn ON</button>
-         
-                        {% else %}
-                      
-                            <button id="detect-mode" class="btn btn-danger"
                                    style="background-color: #dc3545;"
-                                    onclick="toggleDetect()">Turn OFF</button>
+                                   >is OFF</button>
 
-                        {%endif%}
+                        {% else %}
+
+                            <button id="detect-mode" class="btn btn-danger"
+                                   style="background-color: #28a745;"
+                                    >is On</button>
+
+                                    {%endif%} -->
 <!--                            <div class="onoffswitch">
                                 <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked onclick="toggleDetect()">
                                 <label class="onoffswitch-label" for="myonoffswitch">
@@ -83,60 +83,59 @@
 
                             <!-- <label class="switch switch-left-right">
                                 <input class="switch-input" type="checkbox" />
-                                <span class="switch-label" data-on="On" data-off="Off"></span> 
-                                <span class="switch-handle"></span> 
+                                <span class="switch-label" data-on="On" data-off="Off"></span>
+                                <span class="switch-handle"></span>
                             </label> -->
 
+                        </div>
                     </div>
                 </div>
+
+
             </div>
+            <div style="display:flex; justify-content:center;">
+                <div style="width:80%;">
+                    <div class="incontent3">
 
+                        <div class="testflex">
+                            <p class="menu_1">
+                                Elasticsearch Status:
+                            </p>
+                        </div>
+                        <div class="testflex">
+                            {% if es_status %}
 
-        </div>
-        <div style="display:flex; justify-content:center;">
-            <div style="width:80%;">
-                <div class="incontent3">
+                            <p class="menu_1" style="color: green">Connect: {{es_ip}}</p>
 
-                    <div class="testflex">
-                        <p class="menu_1">
-                            Elasticsearch Status:
-                        </p>
+                            {% else %}
+                            <p class="menu_1" style="color: red">Disconnect</p>
+                            {%endif%}
+                        </div>
+
                     </div>
-                    <div class="testflex">
-                        {% if es_status %}
-
-                        <p class="menu_1" style="color: green">Connect: {{es_ip}}</p>
-
-                        {% else %}
-                        <p class="menu_1" style="color: red">Disconnect</p>
-                        {%endif%}
-                    </div>
-
                 </div>
+
+
             </div>
 
-
-        </div>
-
-        <div class="flex-row" style="justify-content:center;">
-            <div class="flex-btm">
-                <form  action="/" method="post">
-                    <button class="btn btn-info bne1 formButtonfront" name="live" type="submit" value="live_camera">
-                        Live
-                    </button>
-                </form>
+            <div class="flex-row" style="justify-content:center;">
+                <div class="flex-btm">
+                        <div name="live-content" ></div>
+                </div>
+                <div class="flex-btm">
+                    <form  action="{{fullip}}">
+                        <button class="btn btn-info btn-block bne1 formButtonfront" type="submit" value="Mainpage">
+                            Home
+                        </button>
+                    </form>
+                </div>
+ 
             </div>
-            <div class="flex-btm">
-                <form  action="{{fullip}}">
-                    <button class="btn btn-info btn-block bne1 formButtonfront" type="submit" value="Mainpage">
-                        Home
-                </form>
-            </div>
-
         </div>
     </div>
-</div>
+
 </body>
+<script type="text/javascript" src="static/js/script.js"></script>
 
 {% endblock %}
 </html>

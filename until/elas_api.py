@@ -30,8 +30,9 @@ class elas_api:
         # self.es_index = 'pre-data'
         # self.es_image = 'pre-'
 
-        self.es_index = 'test-index'
-        self.es_image = 'test-image'
+        self.es_index = 'pigeon_data'
+        self.es_image = 'pigeon_image'
+        self.es_date = 'pigeon_date'
 
         self.weekDays = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
@@ -118,13 +119,13 @@ class elas_api:
             body['dayofweek_int'] = self.dayofweek_int(time_)
             body['dayofweek_text'] = self.dayofweek_text(time_)
 
-            body['Mouth_int'] = self.month_int(time_)
+            body['Month_int'] = self.month_int(time_)
             body['Mouth_text'] = self.month_text(time_)
 
-            body['found'] = found_
+            body['birds_count'] = found_
 
             body['processing_time'] = processing_time
-            # print(body)
+            print('insert image {}\n'.format(time_))
             self.es.index(index=self.es_image, doc_type="_doc", id=eventid, body=body)
 
     def elas_record(self, eventid, time_, label, score, box):
@@ -139,16 +140,34 @@ class elas_api:
             body['dayofweek_int'] = self.dayofweek_int(time_)
             body['dayofweek_text'] = self.dayofweek_text(time_)
 
-            body['Mouth_int'] = self.month_int(time_)
-            body['Mouth_text'] = self.month_text(time_)
+            body['Month_int'] = self.month_int(time_)
+            body['Mounh_text'] = self.month_text(time_)
 
             body['image_id'] = eventid
-            body['found'] = {self.labels_to_names[label]: 1}
+            # body['found'] = {self.labels_to_names[label]: 1}
             body['confidence'] = score
             body['box'] = {'x1': box[0], 'y1': box[1], 'x2': box[2], 'y2': box[3]}
 
-            # print(body)
+
+            print('insert index {}\n{}\n'.format(time_, body))
             self.es.index(index=self.es_index, doc_type="_doc", body=body)
+
+    # def elas_date(self, eventid, time_):
+    #     body = {}
+    #     body['timestamp'] = self.localtimezone(time_)
+    #     # body['timestamp_utc'] = self.utctimezone(time_)
+    #
+    #     body['Hour_int'] = self.hour_int(time_)
+    #     body['Hour_text'] = self.hour_text[body['Hour_int']]
+    #
+    #     body['dayofweek_int'] = self.dayofweek_int(time_)
+    #     body['dayofweek_text'] = self.dayofweek_text(time_)
+    #
+    #     body['Month_int'] = self.month_int(time_)
+    #     body['Month_text'] = self.month_text(time_)
+    #
+    #     print('insert date {}\n{}\n'.format(time_, body))
+    #     self.es.index(index=self.es_date, doc_type="_doc", id=eventid, body=body)
 
     def hour_int(self, time):
         return time.hour
