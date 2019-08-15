@@ -2,6 +2,8 @@ import time
 from datetime import datetime
 from uuid import uuid4
 
+import glob, os
+
 import numpy as np
 import radar
 # set tf backend to allow memory to grow, instead of claiming everything
@@ -50,9 +52,18 @@ class Model:
 
         self.confThreshold = float(confidence)
 
-        self.model = load_model(
-            r'C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\retinanet\model\resnet50_coco_best_v2.1.0.h5',
-            backbone_name='resnet50')
+
+
+        try:
+            model_path = os.getcwd() + '/retinanet/model/resnet50_coco_best_v2.1.0.h5'
+            self.model = load_model(
+                model_path,
+                backbone_name='resnet50')
+        except:
+            model_path = os.getcwd() + '/model/resnet50_coco_best_v2.1.0.h5'
+            self.model = load_model(
+                model_path,
+                backbone_name='resnet50')
         # self.model = load_model(
         #     r'C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\retinanet\model\model.h5',
         #     backbone_name='resnet50')
