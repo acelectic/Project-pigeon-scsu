@@ -188,8 +188,14 @@ def run(vdo_=0):
             status_detect = True
             print('Detect status: {}'.format(status_detect))
 
+        def stopTurret():
+            global shot_status
+            shot_status = False
+            print('Turret Status: {}'.format(shot_status))
+
         scheduler = BackgroundScheduler(timezone=get_localzone())
         scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
+        scheduler.add_job(stopTurret, 'interval', seconds=20)
         scheduler.start()
 
         while True:
