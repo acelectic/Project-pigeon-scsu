@@ -44,7 +44,7 @@ def set_response_headers(response):
 
 
 @app.route('/', methods=['POST', 'GET'])
-def index():
+def index(ips=None):
     """Video streaming home page."""
     ip = request.remote_addr
     if request.method == 'POST':
@@ -56,10 +56,10 @@ def index():
                 return redirect(url_for('live_camera', ip=ip))
         except:
             pass
-
-    print(request.remote_addr)
+    ips = request.args.get('ip')
+    print(ips)
     return render_template('index.html', status='on' if status else 'off', _pass='pigeon', confidence=confidence,
-                           sec_per_frame=sec_per_frame, ip=ip, fullip="http://{}:5000/".format(ip), es_status=es_status,
+                           sec_per_frame=sec_per_frame, ip=ip, fullip="http://{}:5000/".format(ips), es_status=es_status,
                            es_ip=es_ip + ':{}'.format(es_port))
 
 
@@ -230,5 +230,5 @@ def run(vdo_=0):
     return make_response('detect off')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
-    # app.run(host='0.0.0.0', debug=True)
+    # app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
