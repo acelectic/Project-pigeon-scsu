@@ -25,11 +25,11 @@ class Model:
 
         # Size image for train on retinenet
         self.min_side4train = 600
-        self.max_side4train = 800
+        self.max_side4train = 600
 
         # Size image for Save 2 elasticsearch
         self.min_side4elas = 600
-        self.max_side4elas = 800
+        self.max_side4elas = 600
 
         # labels_to_names = {0: 'Pigeon'}
         # print('model confidence:', self.confThreshold)
