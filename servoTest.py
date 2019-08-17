@@ -85,19 +85,19 @@ servo = camera_control()
 
 servo.rotateToDefault()
 
-for i in range(20):
+for i in range(10):
     servo.rotateRight()
     time.sleep(1)
 
-for i in range(20):
+for i in range(10):
     servo.rotateLeft()
     time.sleep(1)
 
-for i in range(20):
+for i in range(10):
     servo.rotateUp()
     time.sleep(1)
 
-for i in range(20):
+for i in range(10):
     servo.rotateDown()
     time.sleep(1)
 
