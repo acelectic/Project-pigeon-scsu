@@ -1,6 +1,5 @@
 import cv2
-from until.elas_api import elas_api
-import retinanet.retinanet_model
+import time
 from until.elas_api import elas_api
 es_ip = '192.168.1.29'
 es_port = 9200
@@ -21,3 +20,4 @@ if __name__ == '__main__':
 
         if _:
             detect_model.detect(frame)
+            time.sleep(10)

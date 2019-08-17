@@ -34,6 +34,10 @@ class elas_api:
         self.es_image = 'pigeon_image'
         self.es_date = 'pigeon_date'
 
+        self.es_index = 'jetson_data'
+        self.es_image = 'jetson_image'
+        self.es_date = 'jetson_date'
+
         self.weekDays = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
         self.hour_text = ["00.00-01.00", "01.00-02.00", "02.00-03.00", "03.00-04.00", "04.00-05.00", "05.00-06.00",
