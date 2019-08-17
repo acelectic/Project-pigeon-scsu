@@ -240,7 +240,7 @@ class Model:
             draw_box(img4elas, b, color=color)
 
             caption = "{} {:.3f} {}".format(self.labels_to_names[label], score, box)
-            # print(caption)
+            print(caption)
             draw_caption(img4elas, b, caption)
             box = [np.ushort(x).item() for x in box]
 
@@ -253,19 +253,12 @@ class Model:
                 self.es.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
             index += 1
 
-        self.__updatelastFrame(img4elas)
+        print(main_body)
 
         if self.es_mode and self.es_status:
             self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
             # self.es.elas_date(**main_body)
 
-        print('Head Shot')
-        # return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
-        #                                                                       eventid, len(boxes), processing_time,
-        #                                                                       '\n{:#>20} {} {:#<20}'.format('',
-        #                                                                                                     'END 1 FRAME',
-        #
-        #                                                                                              ''))
         print("box[0][0]:{}".format(box4turret[0][0]))
         return self.box2tupple(box4turret[0][0])
 
