@@ -65,7 +65,7 @@ class Model:
         #         model_path,
         #         backbone_name='resnet50')
         # model_path = os.getcwd() + '/model/pigeon_resnet50_midway.h5'
-        self.model = load_model('home/minibear/Desktop/newRetinenet/retinanet/model/pigeon_resnet50_midway.h5', backbone_name='resnet50')
+        self.model = load_model('/home/minibear/Desktop/newRetinenet/retinanet/model/pigeon_resnet50_midway.h5', backbone_name='resnet50')
 
         # self.labels_to_names = {0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus',
         #                         6: 'train',
