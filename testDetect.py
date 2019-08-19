@@ -19,3 +19,4 @@ if __name__ == '__main__':
         _, frame = img.read()
         if _:
             detect_model.detect(frame)
+
