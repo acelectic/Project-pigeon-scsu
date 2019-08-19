@@ -17,7 +17,5 @@ if __name__ == '__main__':
     img = cv2.VideoCapture(r"video/YouTube4.mp4")
     while 1:
         _, frame = img.read()
-
         if _:
             detect_model.detect(frame)
-            time.sleep(10)
