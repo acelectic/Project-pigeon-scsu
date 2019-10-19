@@ -108,7 +108,7 @@ class elas_api:
 
         return self.es_status, self.es.info
 
-    def elas_image(self, eventid, image, scale, time_, found_, processing_time):
+    def elas_image(self, image_id, image, scale, time_, found_, processing_time):
         if self.es_status:
             body = {}
             body['original_image'] = self.img2string(image)
@@ -130,9 +130,9 @@ class elas_api:
 
             body['processing_time'] = processing_time
             print('insert image {}\n'.format(time_))
-            self.es.index(index=self.es_image, doc_type="_doc", id=eventid, body=body)
+            self.es.index(index=self.es_image, doc_type="_doc", id=image_id, body=body)
 
-    def elas_record(self, eventid, time_, label, score, box):
+    def elas_record(self, image_id, time_, label, score, box):
         if self.es_status:
             body = {}
             body['timestamp'] = self.localtimezone(time_)
@@ -147,7 +147,7 @@ class elas_api:
             body['Month_int'] = self.month_int(time_)
             body['Mounh_text'] = self.month_text(time_)
 
-            body['image_id'] = eventid
+            body['image_id'] = image_id
             # body['found'] = {self.labels_to_names[label]: 1}
             body['confidence'] = score
             body['box'] = {'x1': box[0], 'y1': box[1], 'x2': box[2], 'y2': box[3]}
@@ -156,7 +156,7 @@ class elas_api:
             print('insert index {}\n{}\n'.format(time_, body))
             self.es.index(index=self.es_index, doc_type="_doc", body=body)
 
-    # def elas_date(self, eventid, time_):
+    # def elas_date(self, image_id, time_):
     #     body = {}
     #     body['timestamp'] = self.localtimezone(time_)
     #     # body['timestamp_utc'] = self.utctimezone(time_)
@@ -171,7 +171,7 @@ class elas_api:
     #     body['Month_text'] = self.month_text(time_)
     #
     #     print('insert date {}\n{}\n'.format(time_, body))
-    #     self.es.index(index=self.es_date, doc_type="_doc", id=eventid, body=body)
+    #     self.es.index(index=self.es_date, doc_type="_doc", id=image_id, body=body)
 
     def hour_int(self, time):
         return time.hour

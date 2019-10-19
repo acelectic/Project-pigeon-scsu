@@ -203,7 +203,7 @@ class Model:
         time_ = self.time2store
         # time_ = datetime.now()
 
-        eventid = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        image_id = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
 
         # process image
         start = time.time()
@@ -218,7 +218,8 @@ class Model:
         box4turret = boxes/scale
         found_ = {}
 
-        main_body = {'eventid': eventid, 'time_': time_}
+        main_body = {'image_id': image_id, 'time_': time_}
+
         self.__data4turret = {
             "box": box4turret[0][0],
             "score": scores[0][0],
@@ -242,26 +243,32 @@ class Model:
             caption = "{} {:.3f} {}".format(self.labels_to_names[label], score, box)
             # print(caption)
             draw_caption(img4elas, b, caption)
+            
             box = [np.ushort(x).item() for x in box]
+
+             if self.es_mode and self.es_status:
+                self.es.elas_record(label=label, score=np.float32(score).item(), box=box, image_id=image_id, time_=time_)
+            index += 1
+
+            if self.es_mode and self.es_status:
+                self.es.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
+            index += 1
 
             try:
                 found_[self.labels_to_names[label]] += 1
             except:
                 found_[self.labels_to_names[label]] = 1
 
-            if self.es_mode and self.es_status:
-                self.es.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
-            index += 1
 
         self.__updatelastFrame(img4elas)
 
-        if self.es_mode and self.es_status:
+        if self.es_mode and self.es_status and found_ > 0:
             self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
             # self.es.elas_date(**main_body)
 
         print('Head Shot')
         # return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
-        #                                                                       eventid, len(boxes), processing_time,
+        #                                                                       image_id, len(boxes), processing_time,
         #                                                                       '\n{:#>20} {} {:#<20}'.format('',
         #                                                                                                     'END 1 FRAME',
         #
