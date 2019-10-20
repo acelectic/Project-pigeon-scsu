@@ -144,7 +144,7 @@ class Model:
                 self.labels_to_names[label], score, box)
             print(caption)
             draw_caption(img4elas, b, caption)
-            temp_data.append([label, score, b])
+            temp_data.append([self.labels_to_names[label], score, b])
         return temp_data
 
     def setConfidence(self, confidence):
@@ -161,28 +161,32 @@ if __name__ == '__main__':
         print(img_name)
 
         img = cv2.VideoCapture(img_path)
-        while 1:
-            _, frame = img.read()
+       
+        _, frame = img.read()
 
-            if _:
-                result = model.detect(frame)
-                print(result)
-                for label, score, box in result:
-                    try:
-                        result_detect[img_name] += [{
-                            'label': label,
-                            'box': (box[0], box[1], box[2], box[3])
-                        }]
-                    except:
-                        result_detect[img_name] = [{
-                            'label': label,
-                            'box': (box[0], box[1], box[2], box[3])
-                        }]
+        if _:
+            result = model.detect(frame)
+            print(result)
+            for label, score, box in result:
+                try:
+                    result_detect[img_name] += [{
+                        'label': label,
+                        'score' : score,
+                        'box': (box[0], box[1], box[2], box[3])
+                    }]
+                except:
+                    result_detect[img_name] = [{
+                        'label': label,
+                        'score': score,
+                        'box': (box[0], box[1], box[2], box[3])
+                    }]
     detect_dir = 'data4eval/test/detections'
     os.makedirs(detect_dir, exist_ok=True)
 
     for key, data in result_detect.items():
+        print(key, data)
         with open(detect_dir+ '/' + key.replace('.png', '.txt'), 'w') as f:
             for data_2 in data:
-                f.write(data_2['label'].replace('\n', '').replace('"', '') + ' ' + ' '.join(data_2['box']) + '\n')
+                print(data_2)
+                f.write(data_2['label'] + ' ' +  data_2['label']+' '.join(data_2['box']) + '\n')
     
