@@ -246,9 +246,9 @@ class Model:
             
             box = [np.ushort(x).item() for x in box]
 
-             if self.es_mode and self.es_status:
-                self.es.elas_record(label=label, score=np.float32(score).item(), box=box, image_id=image_id, time_=time_)
-            index += 1
+            #  if self.es_mode and self.es_status:
+            #     self.es.elas_record(label=label, score=np.float32(score).item(), box=box, image_id=image_id, time_=time_)
+            # index += 1
 
             if self.es_mode and self.es_status:
                 self.es.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
@@ -260,12 +260,12 @@ class Model:
                 found_[self.labels_to_names[label]] = 1
 
 
-        self.__updatelastFrame(img4elas)
+        
 
         if self.es_mode and self.es_status and found_ > 0:
             self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
             # self.es.elas_date(**main_body)
-
+        self.__updatelastFrame(img4elas)
         print('Head Shot')
         # return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
         #                                                                       image_id, len(boxes), processing_time,

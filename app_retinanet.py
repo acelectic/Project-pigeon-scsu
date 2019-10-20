@@ -1,3 +1,4 @@
+
 import os
 from importlib import import_module
 from multiprocessing import Process
@@ -12,8 +13,6 @@ if os.environ.get('CAMERA'):
 else:
     from until.camera_opencv import Camera
 
-from until.elas_api import elas_api
-
 
 try:
 
@@ -21,7 +20,8 @@ try:
     cam_api = camera_control()
 except:
     print("can't connect servo")
-
+    
+from until.elas_api import elas_api
 es_ip = '192.168.1.29'
 es_port = 9200
 es = elas_api(ip=es_ip)
@@ -99,12 +99,13 @@ def mode(subpath):
             p.join()
             print('Detect On')
 
-    return make_response('toggle mode to '+ subpath)
+    return make_response('toggle mode to ' + subpath)
+
 
 @app.route('/detectStatus', methods=["POST"])
 def getDetectStatus():
     global status
-    print('check status: {}'.format( 'on' if status else 'off'))
+    print('check status: {}'.format('on' if status else 'off'))
     return make_response('on' if status else 'off')
 
 
@@ -120,11 +121,11 @@ def set(subpath):
     print(data)
     if subpath == 'frame':
         sec_per_frame = data['frame']
-        print('frame',sec_per_frame)
+        print('frame', sec_per_frame)
 
     elif subpath == 'confidence':
         confidence = data['confidence']
-        print('confidencw',confidence)
+        print('confidencw', confidence)
 
     return redirect(url_for('index'))
 
@@ -160,23 +161,24 @@ def camera_command():
         cam_api.rotateToDefault()
         print(cmd)
 
-
     headers = {"Content-Type": "application/json"}
 
-    return make_response("rotate camera "+ cmd)
+    return make_response("rotate camera " + cmd)
     # return redirect(url_for('snap'))
+
 
 def run(vdo_=0):
     cam_api = None
 
-
     def _a(es, cam_api):
         global status_detect, shot_status
-        print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format('', 'Detect ON', '', confidence, sec_per_frame))
+        print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
+            '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
         from datetime import datetime
-        
-        retinanet = retinanet_model.Model(confidence=confidence, es=es, es_mode=True, cam_api=cam_api)
+
+        retinanet = retinanet_model.Model(
+            confidence=confidence, es=es, es_mode=True, cam_api=cam_api)
 
         status_detect = False
         shot_status = False
@@ -217,10 +219,10 @@ def run(vdo_=0):
                         print(r)
                 if shot_status:
                     shot_tmp = retinanet._updateTracker(frame)
-                    print("cen{}\nmove{}".format((cen_x//2, cen_y//2),shot_tmp))
+                    print("cen{}\nmove{}".format(
+                        (cen_x//2, cen_y//2), shot_tmp))
                     if shot_tmp == 'Stop':
                         shot_status = False
-
 
         cap.release()
 
@@ -229,6 +231,7 @@ def run(vdo_=0):
     status = False
     # return redirect(url_for('index'))
     return make_response('detect off')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
