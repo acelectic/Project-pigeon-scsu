@@ -144,7 +144,7 @@ class Model:
                 self.labels_to_names[label], score, box)
             print(caption)
             draw_caption(img4elas, b, caption)
-            temp_data.append([self.labels_to_names[label], score, b])
+            temp_data.append([self.labels_to_names[label], score, b, processing_time])
         return temp_data
 
     def setConfidence(self, confidence):
@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
     model = Model()
     result_detect = {}
-    for img_path in glob.glob('data4eval/test/*.png')[:1]:
+    for img_path in glob.glob('data4eval/test/*.png')[:]:
         img_name = img_path.split(',')[0].split('/')[-1]
         print(img_name)
 
@@ -167,26 +167,28 @@ if __name__ == '__main__':
         if _:
             result = model.detect(frame)
             print(result)
-            for label, score, box in result:
+            for label, score, box, processing_time in result:
                 try:
                     result_detect[img_name] += [{
                         'label': label,
                         'score' : score,
+                        'processing_time': processing_time,
                         'box': (box[0], box[1], box[2], box[3])
                     }]
                 except:
                     result_detect[img_name] = [{
                         'label': label,
                         'score': score,
+                        'processing_time': processing_time,
                         'box': (box[0], box[1], box[2], box[3])
                     }]
     detect_dir = 'data4eval/test/detections'
     os.makedirs(detect_dir, exist_ok=True)
 
     for key, data in result_detect.items():
-        print(key, data)
+        # print(key, data)
         with open(detect_dir+ '/' + key.replace('.png', '.txt'), 'w') as f:
             for data_2 in data:
-                print(data_2)
-                f.write(data_2['label'] + ' ' +  data_2['label']+' '.join(data_2['box']) + '\n')
+                # print(data_2)
+                f.write(data_2['label'] + ' ' +  '{:.6f} '.format(data_2['score']) +' '.join(map(str, data_2['box'])) + '\n')
     
