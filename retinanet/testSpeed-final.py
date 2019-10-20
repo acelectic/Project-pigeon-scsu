@@ -19,7 +19,7 @@ import cv2
 
 
 class Model:
-    def __init__(self, confidence=0.5, es=None, es_mode=False ):
+    def __init__(self, confidence=0.5, es=None, es_mode=False):
 
         # Size image for train on retinenet
         self.min_side4train = 600
@@ -61,7 +61,7 @@ class Model:
         # model_path = os.getcwd() + '/model/pigeon_resnet50_midway.h5'
 
         self.model = load_model(
-            '/home/minibear/Desktop/newRetinenet/retinanet/model/pigeon_resnet50_midway.h5', backbone_name='resnet50')
+            '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer.h5', backbone_name='resnet50')
 
         self.labels_to_names = {0: 'pigeon'}
 
@@ -80,8 +80,6 @@ class Model:
             stop=datetime(year=2019, month=7, day=23))
 
     def detect(self, image):
-
-        
 
         self.time2store = self.gen_datetime()
         # self.time2store = datetime.now()
@@ -128,7 +126,7 @@ class Model:
 
         # visualize detections
 
-        temp_data = {}
+        temp_data = []
         index = 1
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
             # scores are sorted so we can break
@@ -136,7 +134,6 @@ class Model:
             if score < self.confThreshold:
                 break
 
-            
             color = label_color(label)
 
             b = box.astype(int)
@@ -147,8 +144,7 @@ class Model:
                 self.labels_to_names[label], score, box)
             print(caption)
             draw_caption(img4elas, b, caption)
-            temp_data[label] = {'score': score,
-                                'box' : b}
+            temp_data.append([label, score, b])
         return temp_data
 
     def setConfidence(self, confidence):
@@ -159,5 +155,34 @@ class Model:
 if __name__ == '__main__':
 
     model = Model()
+    result_detect = {}
+    for img_path in glob.glob('data4eval/test/*.png')[:1]:
+        img_name = img_path.split(',')[0].split('/')[-1]
+        print(img_name)
 
-    for imgs in glob.glob():
+        img = cv2.VideoCapture(img_path)
+        while 1:
+            _, frame = img.read()
+
+            if _:
+                result = model.detect(frame)
+                print(result)
+                for label, score, box in result:
+                    try:
+                        result_detect[img_name] += [{
+                            'label': label,
+                            'box': (box[0], box[1], box[2], box[3])
+                        }]
+                    except:
+                        result_detect[img_name] = [{
+                            'label': label,
+                            'box': (box[0], box[1], box[2], box[3])
+                        }]
+    detect_dir = 'data4eval/test/detections'
+    os.makedirs(detect_dir, exist_ok=True)
+
+    for key, data in result_detect.items():
+        with open(detect_dir+ '/' + key.replace('.png', '.txt'), 'w') as f:
+            for data_2 in data:
+                f.write(data_2['label'].replace('\n', '').replace('"', '') + ' ' + ' '.join(data_2['box']) + '\n')
+    
