@@ -54,19 +54,28 @@ class Model:
 
 
 
-        try:
-            model_path = os.getcwd() + '/retinanet/model/resnet50_coco_best_v2.1.0.h5'
-            self.model = load_model(
-                model_path,
-                backbone_name='resnet50')
-        except:
-            model_path = os.getcwd() + '/model/resnet50_coco_best_v2.1.0.h5'
-            self.model = load_model(
-                model_path,
-                backbone_name='resnet50')
+        # try:
+        #     model_path = os.getcwd() + '/retinanet/model/resnet50_coco_best_v2.1.0.h5'
+        #     self.model = load_model(
+        #         model_path,
+        #         backbone_name='resnet50')
+        # except:
+        #     model_path = os.getcwd() + '/model/resnet50_coco_best_v2.1.0.h5'
+        #     self.model = load_model(
+        #         model_path,
+        #         backbone_name='resnet50')
         # self.model = load_model(
-        #     r'C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\retinanet\model\model.h5',
+        #     r'/home/minibear-l/Desktop/pre-data_script/store_models/test-neg/resnet101/default/snapshots/resnet101_20_loss-0.1521_val-loss-19.6176_mAP-0.0490.h5',
         #     backbone_name='resnet50')
+
+
+        
+        # self.model = load_model(
+        #     '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
+
+        self.model = load_model(
+            '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet101')
+
 
         self.labels_to_names = {0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus',
                                 6: 'train',
@@ -240,7 +249,7 @@ class Model:
 
             draw_box(img4elas, b, color=color)
 
-            caption = "{} {:.3f} {}".format(self.labels_to_names[label], score, box)
+            caption = "{} {:.3f}".format(self.labels_to_names[label], score)
             # print(caption)
             draw_caption(img4elas, b, caption)
             
@@ -309,24 +318,44 @@ class Model:
         return 'num {}'.format(datetime.now())
 
 
-# import cv2
-# from until.elas_api import elas_api
-# if __name__ == '__main__':
-#     es = elas_api(ip = '192.168.1.29')
-#     detect_model = Model(es=es, es_mode=True)
-#
-#     # img = cv2.VideoCapture(r"C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\vdo\video_25620705_061211.mp4")
-#     img = cv2.VideoCapture(0)
-#     while 1:
-#         _, frame = img.read()
-#
-#         if _:
-#             detect_model.detect(frame)
-#             turretData = detect_model.getDataTurret()
-#             print(turretData)
-#             img_ = detect_model._getlastFrame()
-#             img_ = cv2.drawMarker(img_, turretData['centroid'], color=(255, 125, 128), markerSize=4)
-#             cv2.imshow('turret', img_)
-#
-#             # cv2.imshow('sss', frame)
-#             cv2.waitKey()
+import cv2
+# from ..until.elas_api import elas_api
+
+
+import uuid
+if __name__ == '__main__':
+    # es = elas_api(ip = '192.168.1.29')
+    detect_model = Model(es_mode=False)
+
+    # # img = cv2.VideoCapture(r"C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\vdo\video_25620705_061211.mp4")
+    # img = cv2.VideoCapture(0)
+    # while 1:
+    #     _, frame = img.read()
+
+    #     if _:
+    #         detect_model.detect(frame)
+    #         turretData = detect_model.getDataTurret()
+    #         print(turretData)
+    #         img_ = detect_model._getlastFrame()
+    #         img_ = cv2.drawMarker(img_, turretData['centroid'], color=(255, 125, 128), markerSize=4)
+    #         cv2.imshow('turret', img_)
+
+    #         cv2.imwrite(str(uuid4())+'.png', img_) 
+    #         # cv2.imshow('sss', frame)
+    #         cv2.waitKey()
+    for i in glob.glob('data4eval/test/*.png'):
+        img = cv2.VideoCapture(i)
+
+        _, frame = img.read()
+
+        if _:
+            detect_model.detect(frame)
+            turretData = detect_model.getDataTurret()
+            print(turretData)
+            img_ = detect_model._getlastFrame()
+            img_ = cv2.drawMarker(img_, turretData['centroid'], color=(255, 125, 128), markerSize=4)
+            cv2.imshow('turret', img_)
+
+            cv2.imwrite(str(uuid4())+'.png', img_) 
+            # cv2.imshow('sss', frame)
+            cv2.waitKey()
