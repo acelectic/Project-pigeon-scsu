@@ -63,7 +63,7 @@ class Model:
         # self.model = load_model(
         #     '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer.h5', backbone_name='resnet50')
 
-      self.model = load_model(
+        self.model = load_model(
             'models/model-infer-neg50-epoch-20-loss_0.1431.h5.keras.h5', backbone_name='resnet50')
 
         # self.model = load_model(
@@ -150,7 +150,8 @@ class Model:
                 self.labels_to_names[label], score, box)
             # print(caption)
             draw_caption(img4elas, b, caption)
-            temp_data.append([self.labels_to_names[label], score, b, processing_time])
+            temp_data.append([self.labels_to_names[label],
+                              score, b, processing_time])
         return temp_data
 
     def setConfidence(self, confidence):
@@ -170,13 +171,13 @@ if __name__ == '__main__':
         # print(img_name)
 
         img = cv2.VideoCapture(img_path)
-       
+
         _, frame = img.read()
-        
+
         if _:
             result = model.detect(frame)
-            print(img_name ,len(result))
-            
+            print(img_name, len(result))
+
             if len(result) == 0:
                 continue
 
@@ -185,7 +186,7 @@ if __name__ == '__main__':
                 try:
                     result_detect[img_name] += [{
                         'label': label,
-                        'score' : score,
+                        'score': score,
                         'processing_time': processing_time,
                         'box': (box[0], box[1], box[2], box[3])
                     }]
@@ -198,19 +199,19 @@ if __name__ == '__main__':
                     }]
                 sub_ps_time += processing_time
 
-            avg_sub_ps_time = sub_ps_time/ len(result)
+            avg_sub_ps_time = sub_ps_time / len(result)
             print(img_name, ':\t', avg_sub_ps_time)
-            avg_process_time+= avg_sub_ps_time
+            avg_process_time += avg_sub_ps_time
 
-    avg_process_time = avg_process_time/ len(imgs_dir)
+    avg_process_time = avg_process_time / len(imgs_dir)
     print('avg_ps_time:\t', avg_process_time)
     detect_dir = base_dir + 'resnet101/detections'
     os.makedirs(detect_dir, exist_ok=True)
 
     for key, data in result_detect.items():
         # print(key, data)
-        with open(detect_dir+ '/' + key.replace('.png', '.txt'), 'w') as f:
+        with open(detect_dir + '/' + key.replace('.png', '.txt'), 'w') as f:
             for data_2 in data:
                 # print(data_2)
-                f.write(data_2['label'] + ' ' +  '{:.6f} '.format(data_2['score']) +' '.join(map(str, data_2['box'])) + '\n')
-    
+                f.write(data_2['label'] + ' ' + '{:.6f} '.format(
+                    data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
