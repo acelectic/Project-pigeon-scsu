@@ -70,11 +70,11 @@ class Model:
 
 
         
-        # self.model = load_model(
-        #     '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
-
         self.model = load_model(
-            '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet101')
+            'models/model-infer-neg50-epoch-20-loss_0.1431.h5.keras.h5', backbone_name='resnet50')
+
+        # self.model = load_model(
+        #     '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet101')
 
 
         self.labels_to_names = {0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus',
