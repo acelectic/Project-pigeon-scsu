@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 from tzlocal import get_localzone
 
 
-class elas_api:
+class Elas_api:
 
     def __init__(self, ip=None, port=9200):
 
