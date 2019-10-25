@@ -112,7 +112,7 @@ class Model:
         boxes, scores, labels = self.model.predict_on_batch(
             np.expand_dims(image, axis=0))
         processing_time = time.time() - start
-        print("processing time: ", processing_time)
+        # print("processing time: ", processing_time)
 
         img4elas, scale4elas = resize_image(
             draw, min_side=self.min_side4elas, max_side=self.max_side4elas)
@@ -147,7 +147,7 @@ class Model:
             draw_box(img4elas, b, color=color)
 
             caption = "{} {:.3f} {}".format(
-                self.labels_to_names[label], score, box)
+                self.labels_to_names[label], score)
             # print(caption)
             draw_caption(img4elas, b, caption)
             temp_data.append([self.labels_to_names[label],
@@ -160,6 +160,7 @@ class Model:
 
 
 def testResnet50():
+    print("{}/n/n{}/n/n{}".format('#'*30, 'Test Speed Resnet 50', '#'*30))
     base_dir = 'data4eval/test/'
     model = Model(model_is='resnet50')
     result_detect = {}
@@ -176,7 +177,7 @@ def testResnet50():
 
         if _:
             result = model.detect(frame)
-            print(img_name, len(result))
+            # print(img_name, len(result))
 
             if len(result) == 0:
                 continue
@@ -200,7 +201,7 @@ def testResnet50():
                 sub_ps_time += processing_time
 
             avg_sub_ps_time = sub_ps_time / len(result)
-            print(img_name, ':\t', avg_sub_ps_time)
+            # print(img_name, ':\t', avg_sub_ps_time)
             avg_process_time += avg_sub_ps_time
 
     avg_process_time = avg_process_time / len(imgs_dir)
@@ -218,6 +219,7 @@ def testResnet50():
 
 
 def testResnet101():
+    print("{}/n/n{}/n/n{}".format('#'*30, 'Test Speed Resnet 101', '#'*30))
     base_dir = 'data4eval/test/'
     model = Model(model_is='resnet101')
     result_detect = {}
@@ -234,7 +236,7 @@ def testResnet101():
 
         if _:
             result = model.detect(frame)
-            print(img_name, len(result))
+            # print(img_name, len(result))
 
             if len(result) == 0:
                 continue
@@ -258,7 +260,7 @@ def testResnet101():
                 sub_ps_time += processing_time
 
             avg_sub_ps_time = sub_ps_time / len(result)
-            print(img_name, ':\t', avg_sub_ps_time)
+            # print(img_name, ':\t', avg_sub_ps_time)
             avg_process_time += avg_sub_ps_time
 
     avg_process_time = avg_process_time / len(imgs_dir)
@@ -276,8 +278,9 @@ def testResnet101():
 
 
 if __name__ == '__main__':
-    args = sys.argv[1]
-    if args == 1:
+    args = sys.argv[1:][0]
+    print(args)
+    if args == '1':
         testResnet50()
-    elif args == 2:
+    elif args == '2':
         testResnet101()
