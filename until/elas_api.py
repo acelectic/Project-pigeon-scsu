@@ -21,14 +21,6 @@ class elas_api:
 
 
     def preSomething(self):
-        # self.es_index = 'pigeon-test'
-        # self.es_image = 'pigeon-image-test2'
-
-        # self.es_index = 'pigeon-recoed-test3'
-        # self.es_image = 'pigeon-image-test3'
-
-        # self.es_index = 'pre-data'
-        # self.es_image = 'pre-'
 
         self.es_index = 'pigeon_data'
         self.es_image = 'pigeon_image'
@@ -107,11 +99,15 @@ class elas_api:
             self.es_status = True
 
         return self.es_status, self.es.info
+    
+    def setElasIndex(self, backbone):
+        self.es_index = 'jetson_{}_data'.format(backbone)
+        self.es_image = 'jetson_{}_image'.format(backbone)
 
     def elas_image(self, image_id, image, scale, time_, found_, processing_time):
         if self.es_status:
             body = {}
-            body['original_image'] = self.img2string(image)
+            body['original_img'] = self.img2string(image)
             body['scale'] = scale
 
             body['timestamp'] = self.localtimezone(time_)
@@ -156,22 +152,6 @@ class elas_api:
             print('insert index {}\n{}\n'.format(time_, body))
             self.es.index(index=self.es_index, doc_type="_doc", body=body)
 
-    # def elas_date(self, image_id, time_):
-    #     body = {}
-    #     body['timestamp'] = self.localtimezone(time_)
-    #     # body['timestamp_utc'] = self.utctimezone(time_)
-    #
-    #     body['Hour_int'] = self.hour_int(time_)
-    #     body['Hour_text'] = self.hour_text[body['Hour_int']]
-    #
-    #     body['dayofweek_int'] = self.dayofweek_int(time_)
-    #     body['dayofweek_text'] = self.dayofweek_text(time_)
-    #
-    #     body['Month_int'] = self.month_int(time_)
-    #     body['Month_text'] = self.month_text(time_)
-    #
-    #     print('insert date {}\n{}\n'.format(time_, body))
-    #     self.es.index(index=self.es_date, doc_type="_doc", id=image_id, body=body)
 
     def hour_int(self, time):
         return time.hour
