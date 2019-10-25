@@ -311,7 +311,7 @@ class Model:
 
 
 import cv2
-# from ..until.elas_api import elas_api
+from ..until.elas_api import elas_api
 
 
 import uuid
