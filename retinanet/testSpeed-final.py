@@ -57,12 +57,16 @@ class Model:
         if model_is == 'resnet50':
 
             # Size image for train on retinenet
+            if self.es:
+                self.es.setElasIndex(model_is)
+            
             self.min_side4train = 700
             self.max_side4train = 700
             self.model = load_model(
                 'models/resnet50/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
         elif model_is == 'resnet101':
-
+            if self.es:
+                self.es.setElasIndex(model_is)
             # Size image for train on retinenet
             self.min_side4train = 400
             self.max_side4train = 400
