@@ -146,7 +146,7 @@ class Model:
 
             draw_box(img4elas, b, color=color)
 
-            caption = "{} {:.3f} {}".format(
+            caption = "{} {:.3f}".format(
                 self.labels_to_names[label], score)
             # print(caption)
             draw_caption(img4elas, b, caption)
