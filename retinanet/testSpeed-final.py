@@ -1,10 +1,10 @@
+import glob
+import os
 import time
 from datetime import datetime
 from uuid import uuid4
 
-import glob
-import os
-
+import cv2
 import numpy as np
 import radar
 # set tf backend to allow memory to grow, instead of claiming everything
@@ -13,13 +13,11 @@ from keras_retinanet.utils.colors import label_color
 from keras_retinanet.utils.image import preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 
-import cv2
-
 # thai_timezone = pytz.timezone('Asia/Bangkok')
 
 
 class Model:
-    def __init__(self, confidence=0.5, es=None, es_mode=False):
+    def __init__(self, confidence=0.5, es=None, es_mode=False, model_is='resnet50'):
 
         # Size image for train on retinenet
         self.min_side4train = 400
@@ -48,7 +46,7 @@ class Model:
 
         self.confThreshold = float(confidence)
 
-        # try:
+        # try:model_
         #     model_path = os.getcwd() + '/retinanet/model/resnet50_coco_best_v2.1.0.h5'
         #     self.model = load_model(
         #         model_path,
@@ -59,15 +57,12 @@ class Model:
         #         model_path,
         #         backbone_name='resnet50')
         # model_path = os.getcwd() + '/model/pigeon_resnet50_midway.h5'
-
-        # self.model = load_model(
-        #     '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer.h5', backbone_name='resnet50')
-
-        self.model = load_model(
-            'models/model-infer-neg50-epoch-20-loss_0.1431.h5.keras.h5', backbone_name='resnet50')
-
-        # self.model = load_model(
-        #     '/home/minibear-l/Desktop/pre-data_script/evalresult/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet101')
+        if model_is == 'resnet50':
+            self.model = load_model(
+			    'models/resnet50/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
+        elif model_is == 'resnet101':
+            self.model = load_model(
+			    'models/resnet101/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet50')
 
         self.labels_to_names = {0: 'pigeon'}
 
@@ -159,9 +154,66 @@ class Model:
         self.confThreshold = float(confidence)
 
 
-if __name__ == '__main__':
-    base_dir = 'data4eval/test'
-    model = Model()
+def testResnet50():
+    base_dir = 'data4eval/test/'
+    model = Model(model_is='resnet50')
+    result_detect = {}
+    avg_process_time = 0
+    imgs_dir = glob.glob(base_dir+'/*.png')[:]
+
+    for img_path in imgs_dir:
+        img_name = img_path.split(',')[0].split('/')[-1]
+        # print(img_name)
+
+        img = cv2.VideoCapture(img_path)
+
+        _, frame = img.read()
+
+        if _:
+            result = model.detect(frame)
+            print(img_name, len(result))
+
+            if len(result) == 0:
+                continue
+
+            sub_ps_time = 0
+            for label, score, box, processing_time in result:
+                try:
+                    result_detect[img_name] += [{
+                        'label': label,
+                        'score': score,
+                        'processing_time': processing_time,
+                        'box': (box[0], box[1], box[2], box[3])
+                    }]
+                except:
+                    result_detect[img_name] = [{
+                        'label': label,
+                        'score': score,
+                        'processing_time': processing_time,
+                        'box': (box[0], box[1], box[2], box[3])
+                    }]
+                sub_ps_time += processing_time
+
+            avg_sub_ps_time = sub_ps_time / len(result)
+            print(img_name, ':\t', avg_sub_ps_time)
+            avg_process_time += avg_sub_ps_time
+
+    avg_process_time = avg_process_time / len(imgs_dir)
+    print('avg_ps_time:\t', avg_process_time)
+    detect_dir = base_dir + 'resnet50/detections'
+    os.makedirs(detect_dir, exist_ok=True)
+
+    for key, data in result_detect.items():
+        # print(key, data)
+        with open(detect_dir + '/' + key.replace('.png', '.txt'), 'w') as f:
+            for data_2 in data:
+                # print(data_2)
+                f.write(data_2['label'] + ' ' + '{:.6f} '.format(
+                    data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
+
+def testResnet101():
+    base_dir = 'data4eval/test/'
+    model = Model(model_is='resnet101')
     result_detect = {}
     avg_process_time = 0
     imgs_dir = glob.glob(base_dir+'/*.png')[:]
@@ -215,3 +267,8 @@ if __name__ == '__main__':
                 # print(data_2)
                 f.write(data_2['label'] + ' ' + '{:.6f} '.format(
                     data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
+
+if __name__ == '__main__':
+
+    testResnet50()
+    testResnet101()
