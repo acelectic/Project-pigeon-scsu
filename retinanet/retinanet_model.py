@@ -319,35 +319,21 @@ if __name__ == '__main__':
     # es = elas_api(ip = '192.168.1.29')
     detect_model = Model(es_mode=False, model_is='resnet50')
 
-    # # img = cv2.VideoCapture(r"C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\vdo\video_25620705_061211.mp4")
+    img = cv2.VideoCapture(r"video/video_25620705_061211.mp4")
     # img = cv2.VideoCapture(0)
-    # while 1:
+    while 1:
+        _, frame = img.read()
+
+        if _:
+            detect_model.detect(frame)
+    # for i in glob.glob('data4eval/test/*.png'):
+    #     img = cv2.VideoCapture(i)
+
     #     _, frame = img.read()
 
     #     if _:
     #         detect_model.detect(frame)
     #         turretData = detect_model.getDataTurret()
     #         print(turretData)
-    #         img_ = detect_model._getlastFrame()
-    #         img_ = cv2.drawMarker(img_, turretData['centroid'], color=(255, 125, 128), markerSize=4)
-    #         cv2.imshow('turret', img_)
-
-    #         cv2.imwrite(str(uuid4())+'.png', img_) 
-    #         # cv2.imshow('sss', frame)
-    #         cv2.waitKey()
-    for i in glob.glob('data4eval/test/*.png'):
-        img = cv2.VideoCapture(i)
-
-        _, frame = img.read()
-
-        if _:
-            detect_model.detect(frame)
-            turretData = detect_model.getDataTurret()
-            print(turretData)
-            img_ = detect_model._getlastFrame()
-            img_ = cv2.drawMarker(img_, turretData['centroid'], color=(255, 125, 128), markerSize=4)
-            cv2.imshow('turret', img_)
-
-            cv2.imwrite(str(uuid4())+'.png', img_) 
-            # cv2.imshow('sss', frame)
-            cv2.waitKey()
+ 
+           
