@@ -5,3 +5,7 @@ data4eval/
 *.h5
 *.png
 video/
+
+*.pyc
+
+
