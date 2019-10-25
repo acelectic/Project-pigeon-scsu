@@ -1,5 +1,6 @@
 import glob
-import os, sys
+import os
+import sys
 import time
 from datetime import datetime
 from uuid import uuid4
@@ -18,8 +19,6 @@ from keras_retinanet.utils.visualization import draw_box, draw_caption
 
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, model_is='resnet50'):
-
-        
 
         # Size image for Save 2 elasticsearch
         self.min_side4elas = 600
@@ -56,19 +55,19 @@ class Model:
         #         backbone_name='resnet50')fl
         # model_path = os.getcwd() + '/model/pigeon_resnet50_midway.h5'
         if model_is == 'resnet50':
-            
+
             # Size image for train on retinenet
             self.min_side4train = 700
             self.max_side4train = 700
             self.model = load_model(
-			    'models/resnet50/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
+                'models/resnet50/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
         elif model_is == 'resnet101':
-            
+
             # Size image for train on retinenet
             self.min_side4train = 400
             self.max_side4train = 400
             self.model = load_model(
-			    'models/resnet101/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet50')
+                'models/resnet101/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet50')
 
         self.labels_to_names = {0: 'pigeon'}
 
@@ -217,6 +216,7 @@ def testResnet50():
                 f.write(data_2['label'] + ' ' + '{:.6f} '.format(
                     data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
 
+
 def testResnet101():
     base_dir = 'data4eval/test/'
     model = Model(model_is='resnet101')
@@ -254,10 +254,10 @@ def testResnet101():
                         'score': score,
                         'processing_time': processing_time,
                         'box': (box[0], box[1], box[2], box[3])
-                 700   }]
-                s700ub_ps_time += processing_time
-700
-            avg_s700ub_ps_time = sub_ps_time / len(result)
+                    }]
+                sub_ps_time += processing_time
+
+            avg_sub_ps_time = sub_ps_time / len(result)
             print(img_name, ':\t', avg_sub_ps_time)
             avg_process_time += avg_sub_ps_time
 
@@ -273,6 +273,7 @@ def testResnet101():
                 # print(data_2)
                 f.write(data_2['label'] + ' ' + '{:.6f} '.format(
                     data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
+
 
 if __name__ == '__main__':
     args = sys.argv[1]
