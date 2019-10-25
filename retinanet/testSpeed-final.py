@@ -1,5 +1,5 @@
 import glob
-import os
+import os, sys
 import time
 from datetime import datetime
 from uuid import uuid4
@@ -19,9 +19,7 @@ from keras_retinanet.utils.visualization import draw_box, draw_caption
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, model_is='resnet50'):
 
-        # Size image for train on retinenet
-        self.min_side4train = 400
-        self.max_side4train = 400
+        
 
         # Size image for Save 2 elasticsearch
         self.min_side4elas = 600
@@ -52,15 +50,23 @@ class Model:
         #         model_path,
         #         backbone_name='resnet50')
         # except:
-        #     model_path = os.getcwd() + '/model/resnet50_coco_best_v2.1.0.h5'
+        #     model_path = os.getcwd() + '/fldel/resnet50_coco_best_v2.1.0.h5'
         #     self.model = load_model(
         #         model_path,
-        #         backbone_name='resnet50')
+        #         backbone_name='resnet50')fl
         # model_path = os.getcwd() + '/model/pigeon_resnet50_midway.h5'
         if model_is == 'resnet50':
+            
+            # Size image for train on retinenet
+            self.min_side4train = 700
+            self.max_side4train = 700
             self.model = load_model(
 			    'models/resnet50/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
         elif model_is == 'resnet101':
+            
+            # Size image for train on retinenet
+            self.min_side4train = 400
+            self.max_side4train = 400
             self.model = load_model(
 			    'models/resnet101/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet50')
 
@@ -248,10 +254,10 @@ def testResnet101():
                         'score': score,
                         'processing_time': processing_time,
                         'box': (box[0], box[1], box[2], box[3])
-                    }]
-                sub_ps_time += processing_time
-
-            avg_sub_ps_time = sub_ps_time / len(result)
+                 700   }]
+                s700ub_ps_time += processing_time
+700
+            avg_s700ub_ps_time = sub_ps_time / len(result)
             print(img_name, ':\t', avg_sub_ps_time)
             avg_process_time += avg_sub_ps_time
 
@@ -269,6 +275,8 @@ def testResnet101():
                     data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
 
 if __name__ == '__main__':
-
-    testResnet50()
-    testResnet101()
+    args = sys.argv[1]
+    if args == 1:
+        testResnet50()
+    elif args == 2:
+        testResnet101()
