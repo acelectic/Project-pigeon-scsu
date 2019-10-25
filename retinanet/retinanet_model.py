@@ -316,8 +316,8 @@ import cv2
 
 import uuid
 if __name__ == '__main__':
-    # es = elas_api(ip = '192.168.1.29')
-    detect_model = Model(es_mode=False, model_is='resnet50')
+    es = elas_api(ip = '192.168.1.29')
+    detect_model = Model(es=es, es_mode=True, model_is='resnet50')
 
     img = cv2.VideoCapture(r"video/video_25620705_061211.mp4")
     # img = cv2.VideoCapture(0)
