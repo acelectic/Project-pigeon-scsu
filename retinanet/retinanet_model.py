@@ -210,6 +210,7 @@ class Model:
         start = time.time()
         boxes, scores, labels = self.model.predict_on_batch(np.expand_dims(image, axis=0))
         processing_time = time.time() - start
+
         print("processing time: ", processing_time)
 
         img4elas, scale4elas = resize_image(draw, min_side=self.min_side4elas, max_side=self.max_side4elas)
@@ -307,33 +308,14 @@ class Model:
         self.confThreshold = float(confidence)
 
     def testDetect(self):
-        return 'num {}'.format(datetime.now())
+        self.detect(frame)
+        # for i in glob.glob('data4eval/test/*.png'):
+        #     img = cv2.VideoCapture(i)
 
+        #     _, frame = img.read()
 
-import cv2
-from ..until.elas_api import elas_api
-
-
-import uuid
-if __name__ == '__main__':
-    es = elas_api(ip = '192.168.1.29')
-    detect_model = Model(es=es, es_mode=True, model_is='resnet50')
-
-    img = cv2.VideoCapture(r"video/video_25620705_061211.mp4")
-    # img = cv2.VideoCapture(0)
-    while 1:
-        _, frame = img.read()
-
-        if _:
-            detect_model.detect(frame)
-    # for i in glob.glob('data4eval/test/*.png'):
-    #     img = cv2.VideoCapture(i)
-
-    #     _, frame = img.read()
-
-    #     if _:
-    #         detect_model.detect(frame)
-    #         turretData = detect_model.getDataTurret()
-    #         print(turretData)
- 
-           
+        #     if _:
+        #         detect_model.detect(frame)
+        #         turretData = detect_model.getDataTurret()
+        #         print(turretData)
+        return ''
