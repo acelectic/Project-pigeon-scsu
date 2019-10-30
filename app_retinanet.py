@@ -23,7 +23,7 @@ try:
 except:
     print("can't connect servo")
 
-
+ 
 es_ip = '192.168.1.29'
 es_port = 9200
 es = Elas_api(ip=es_ip)
