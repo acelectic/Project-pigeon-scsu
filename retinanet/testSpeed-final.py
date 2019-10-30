@@ -63,7 +63,7 @@ class Model:
             self.min_side4train = 700
             self.max_side4train = 700
             self.model = load_model(
-                'models/resnet50/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
+                'models/resnet50/infer-resnet50.h5', backbone_name='resnet50')
         elif model_is == 'resnet101':
             if self.es:
                 self.es.setElasIndex(model_is)
@@ -71,7 +71,7 @@ class Model:
             self.min_side4train = 400
             self.max_side4train = 400
             self.model = load_model(
-                'models/resnet101/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet50')
+                'models/resnet101/infer-resnet101.h5', backbone_name='resnet101')
 
         self.labels_to_names = {0: 'pigeon'}
 
