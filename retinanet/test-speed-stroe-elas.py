@@ -44,7 +44,7 @@ class Model:
             self.es_status = True
             self.es = es
             print('connect es')
-            self.es_mode = es_mode
+            self.es_mode = True
 
         self.confThreshold = float(confidence)
 
@@ -163,7 +163,7 @@ class Model:
             #     self.es.elas_record(label=label, score=np.float32(score).item(), box=box, image_id=image_id, time_=time_)
             # index += 1
 
-            if self.es_mode and self.es_status and label == 0:
+            if self.es_mode and self.es_status and self.labels_to_names[label] == 'pigeon':
                 # print('{tag}\n\n{data}\n\n{tag}'.format(
                 #     tag='#'*20,
                 #     data='label: {label}\nscore: {score}'.format(
@@ -178,7 +178,7 @@ class Model:
             except:
                 found_[self.labels_to_names[label]] = 1
 
-        if self.es_mode and self.es_status and found_ > 0:
+        if self.es_mode and self.es_status and found_['pigeon'] > 0:
             print('{tag}\n\n{data}\n\n{tag}'.format(
                 tag='#'*50,
                 data='id: {id}\nbird count: {found}'.format(
