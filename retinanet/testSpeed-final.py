@@ -212,16 +212,16 @@ def testResnet50(base_dir):
     if len(imgs_dir) > 0:
         avg_process_time = avg_process_time / len(imgs_dir)
     print('avg_ps_time:\t', avg_process_time)
-    detect_dir = base_dir + 'resnet50/detections'
-    os.makedirs(detect_dir, exist_ok=True)
+    # detect_dir = base_dir + 'resnet50/detections'
+    # os.makedirs(detect_dir, exist_ok=True)
 
-    for key, data in result_detect.items():
-        # print(key, data)
-        with open(detect_dir + '/' + key.replace('.png', '.txt'), 'w') as f:
-            for data_2 in data:
-                # print(data_2)
-                f.write(data_2['label'] + ' ' + '{:.6f} '.format(
-                    data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
+    # for key, data in result_detect.items():
+    #     # print(key, data)
+    #     with open(detect_dir + '/' + key.replace('.png', '.txt'), 'w') as f:
+    #         for data_2 in data:
+    #             # print(data_2)
+    #             f.write(data_2['label'] + ' ' + '{:.6f} '.format(
+                    # data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
 
 
 def testResnet101(base_dir):
