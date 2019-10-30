@@ -7,8 +7,8 @@ def download_imagenet():
     """
 
     model_store = os.getcwd() + '/models/resnet50'
-    resnet_filename = 'model-infer-neg50-epoch-20-loss_0.1431.h5'
-    resnet_resource = 'https://github.com/acelectic/Project-pigeon-scsu/releases/download/1.0/model-infer-neg50-epoch-20-loss_0.1431.h5'
+    resnet_filename = 'infer-resnet50.h5'
+    resnet_resource = 'https://github.com/acelectic/Project-pigeon-scsu/releases/download/v1.1/model-infer-merge-resnet50.h5'
 
     get_file(
         resnet_filename,
@@ -17,8 +17,8 @@ def download_imagenet():
     )
 
     model_store = os.getcwd() + '/models/resnet101'
-    resnet_filename = 'model-infer-neg101-epoch-20-loss_0.1521.h5'
-    resnet_resource = 'https://github.com/acelectic/Project-pigeon-scsu/releases/download/1.0/model-infer-neg101-epoch-20-loss_0.1521.h5'
+    resnet_filename = 'infer-resnet101.h5'
+    resnet_resource = 'https://github.com/acelectic/Project-pigeon-scsu/releases/download/v1.1/model-infer-merge-resnet101.h5'
 
     get_file(
         resnet_filename,
