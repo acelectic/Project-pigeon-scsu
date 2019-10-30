@@ -20,6 +20,7 @@ from keras_retinanet.utils.visualization import draw_box, draw_caption
 
 import set_model2environ
 
+
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, model_is='resnet50'):
 
@@ -44,7 +45,6 @@ class Model:
             self.es = es
             print('connect es')
             self.es_mode = es_mode
-        
 
         self.confThreshold = float(confidence)
 
@@ -134,15 +134,8 @@ class Model:
         found_ = {}
 
         main_body = {'image_id': image_id, 'time_': time_}
-        self.__data4turret = {
-            "box": box4turret[0][0],
-            "score": scores[0][0],
-            "label": labels[0][0],
-            "scale": scale,
-            "raw_image-shape": draw.shape}
-
         # visualize detections
-
+        print('es_mode: {}\nstatus: {}'.format(self.es_mode, self.es_status))
         temp_data = []
         index = 1
         for box, score, label in zip(boxes[0], scores[0], labels[0]):
@@ -163,24 +156,35 @@ class Model:
             draw_caption(img4elas, b, caption)
             temp_data.append([self.labels_to_names[label],
                               score, b, processing_time])
-            
+
             box = [np.ushort(x).item() for x in box]
 
             #  if self.es_mode and self.es_status:
             #     self.es.elas_record(label=label, score=np.float32(score).item(), box=box, image_id=image_id, time_=time_)
             # index += 1
 
-            if self.es_mode and self.es_status:
-                self.es.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
+            if self.es_mode and self.es_status and label == 0:
+                # print('{tag}\n\n{data}\n\n{tag}'.format(
+                #     tag='#'*20,
+                #     data='label: {label}\nscore: {score}'.format(
+                #         label=self.labels_to_names[label], score=score)
+                # ))
+                self.es.elas_record(label=label, score=np.float32(
+                    score).item(), box=box, **main_body)
             index += 1
 
             try:
                 found_[self.labels_to_names[label]] += 1
             except:
                 found_[self.labels_to_names[label]] = 1
-                
+
         if self.es_mode and self.es_status and found_ > 0:
-            self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
+            print('{tag}\n\n{data}\n\n{tag}'.format(
+                tag='#'*50,
+                data='id: {id}\nbird count: {found}'.format(
+                    id=image_id, found=found_)))
+            self.es.elas_image(image=img4elas, scale=scale, found_=found_,
+                               processing_time=processing_time, **main_body)
             # self.es.elas_date(**main_body)
         return temp_data
 
@@ -190,7 +194,7 @@ class Model:
 
 
 def testResnet50(base_dir, es):
-    print("{}/n/n{}/n/n{}".format('#'*30, 'Test Speed Resnet 50', '#'*30))
+    print("{}\n\n{}\n\n{}".format('#'*30, 'Test Speed Resnet 50', '#'*30))
     base_dir = base_dir
     model = Model(model_is='resnet50', es=es)
     result_detect = {}
@@ -246,11 +250,11 @@ def testResnet50(base_dir, es):
     #         for data_2 in data:
     #             # print(data_2)
     #             f.write(data_2['label'] + ' ' + '{:.6f} '.format(
-                    # data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
+    # data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
 
 
 def testResnet101(base_dir, es):
-    print("{}/n/n{}/n/n{}".format('#'*30, 'Test Speed Resnet 101', '#'*30))
+    print("{}\n\n{}\n\n{}".format('#'*30, 'Test Speed Resnet 101', '#'*30))
     base_dir = base_dir
     model = Model(model_is='resnet101', es=es)
     result_detect = {}
@@ -293,7 +297,7 @@ def testResnet101(base_dir, es):
             avg_sub_ps_time = sub_ps_time / len(result)
             # print(img_name, ':\t', avg_sub_ps_time)
             avg_process_time += avg_sub_ps_time
-            
+
     if len(imgs_dir) > 0:
         avg_process_time = avg_process_time / len(imgs_dir)
     print('avg_ps_time:\t', avg_process_time)
@@ -315,11 +319,10 @@ if __name__ == '__main__':
     es_ip = '192.168.1.29'
     es_port = 9200
     es = Elas_api(ip=es_ip)
-    
+
     args = sys.argv[1:][0]
     base_dir = 'data4eval/test_merge/'
     print(args)
-
 
     if args == '1':
         testResnet50(base_dir=base_dir, es=es)

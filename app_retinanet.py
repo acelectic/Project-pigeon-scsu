@@ -1,6 +1,6 @@
 
 from until.elas_api import Elas_api
-import until.set_model2environ
+import retinanet.set_model2environ
 import os
 from importlib import import_module
 from multiprocessing import Process
