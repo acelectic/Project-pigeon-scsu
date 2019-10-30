@@ -32,6 +32,7 @@ class Model:
         #
         if es == None or es.checkStatus() == False:
             # raise ValueError("Connection failed")
+            self.es = None
             self.es_status = False
             print("can't connect to es")
         else:
@@ -57,7 +58,7 @@ class Model:
         if model_is == 'resnet50':
 
             # Size image for train on retinenet
-            if self.es:
+            if self.es != None:
                 self.es.setElasIndex(model_is)
             
             self.min_side4train = 700
@@ -65,7 +66,7 @@ class Model:
             self.model = load_model(
                 'models/resnet50/infer-resnet50.h5', backbone_name='resnet50')
         elif model_is == 'resnet101':
-            if self.es:
+            if self.es != None:
                 self.es.setElasIndex(model_is)
             # Size image for train on retinenet
             self.min_side4train = 400
@@ -163,9 +164,9 @@ class Model:
         self.confThreshold = float(confidence)
 
 
-def testResnet50():
+def testResnet50(base_dir):
     print("{}/n/n{}/n/n{}".format('#'*30, 'Test Speed Resnet 50', '#'*30))
-    base_dir = 'data4eval/test/'
+    base_dir = base_dir
     model = Model(model_is='resnet50')
     result_detect = {}
     avg_process_time = 0
@@ -208,7 +209,8 @@ def testResnet50():
             # print(img_name, ':\t', avg_sub_ps_time)
             avg_process_time += avg_sub_ps_time
 
-    avg_process_time = avg_process_time / len(imgs_dir)
+    if len(imgs_dir) > 0:
+        avg_process_time = avg_process_time / len(imgs_dir)
     print('avg_ps_time:\t', avg_process_time)
     detect_dir = base_dir + 'resnet50/detections'
     os.makedirs(detect_dir, exist_ok=True)
@@ -222,9 +224,9 @@ def testResnet50():
                     data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
 
 
-def testResnet101():
+def testResnet101(base_dir):
     print("{}/n/n{}/n/n{}".format('#'*30, 'Test Speed Resnet 101', '#'*30))
-    base_dir = 'data4eval/test/'
+    base_dir = base_dir
     model = Model(model_is='resnet101')
     result_detect = {}
     avg_process_time = 0
@@ -266,8 +268,9 @@ def testResnet101():
             avg_sub_ps_time = sub_ps_time / len(result)
             # print(img_name, ':\t', avg_sub_ps_time)
             avg_process_time += avg_sub_ps_time
-
-    avg_process_time = avg_process_time / len(imgs_dir)
+            
+    if len(imgs_dir) > 0:
+        avg_process_time = avg_process_time / len(imgs_dir)
     print('avg_ps_time:\t', avg_process_time)
     detect_dir = base_dir + 'resnet101/detections'
     os.makedirs(detect_dir, exist_ok=True)
@@ -283,8 +286,9 @@ def testResnet101():
 
 if __name__ == '__main__':
     args = sys.argv[1:][0]
+    base_dir = 'data4eval/test_merge/'
     print(args)
     if args == '1':
-        testResnet50()
+        testResnet50(base_dir=base_dir)
     elif args == '2':
-        testResnet101()
+        testResnet101(base_dir=base_dir)
