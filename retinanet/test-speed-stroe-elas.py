@@ -113,8 +113,8 @@ class Model:
         image, scale = resize_image(
             image, min_side=self.min_side4train, max_side=self.max_side4train)
 
-        # time_ = self.time2store
-        time_ = datetime.now()
+        time_ = self.time2store
+        # time_ = datetime.now()
 
         image_id = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
 
