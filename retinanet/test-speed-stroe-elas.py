@@ -15,7 +15,7 @@ from keras_retinanet.utils.image import preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 
 # thai_timezone = pytz.timezone('Asia/Bangkok')
-
+import until.set_model2environ
 
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, model_is='resnet50'):
@@ -56,16 +56,18 @@ class Model:
         #         model_path,
         #         backbone_name='resnet50')fl
         # model_path = os.getcwd() + '/model/pigeon_resnet50_midway.h5'
+        resnet50_dir = os.environ['MODEL_RESNET101']
+        resnet101_dir = os.environ['MODEL_RESNET50']
         if model_is == 'resnet50':
 
             # Size image for train on retinenet
             if self.es != None:
                 self.es.setElasIndex(model_is)
-            
+
             self.min_side4train = 700
             self.max_side4train = 700
             self.model = load_model(
-                'models/resnet50/infer-resnet50.h5', backbone_name='resnet50')
+                resnet50_dir, backbone_name='resnet50')
         elif model_is == 'resnet101':
             if self.es != None:
                 self.es.setElasIndex(model_is)
@@ -73,7 +75,7 @@ class Model:
             self.min_side4train = 400
             self.max_side4train = 400
             self.model = load_model(
-                'models/resnet101/infer-resnet101.h5', backbone_name='resnet101')
+                resnet101_dir, backbone_name='resnet101')
 
         self.labels_to_names = {0: 'pigeon'}
 

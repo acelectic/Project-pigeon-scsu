@@ -1,4 +1,6 @@
 
+from until.elas_api import Elas_api
+import until.set_model2environ
 import os
 from importlib import import_module
 from multiprocessing import Process
@@ -20,8 +22,8 @@ try:
     cam_api = camera_control()
 except:
     print("can't connect servo")
-    
-from until.elas_api import Elas_api
+
+
 es_ip = '192.168.1.29'
 es_port = 9200
 es = Elas_api(ip=es_ip)
@@ -186,7 +188,7 @@ def run(vdo_=0):
         shot_status = False
         # vdo_ = 'video/YouTube4.mp4'
         # cap = cv2.VideoCapture(vdo_)
-        vdo_='video/video_25620705_061211.mp4'
+        vdo_ = 'video/video_25620705_061211.mp4'
         cap = cv2.VideoCapture(vdo_)
 
         def task_deley():
@@ -253,7 +255,7 @@ def runtest(vdo_=0):
         shot_status = False
         # vdo_ = 'video/YouTube4.mp4'
         # cap = cv2.VideoCapture(vdo_)
-        vdo_='video/video_25620705_061211.mp4'
+        vdo_ = 'video/video_25620705_061211.mp4'
         cap = cv2.VideoCapture(vdo_)
 
         def task_deley():
@@ -283,7 +285,6 @@ def runtest(vdo_=0):
                     r = retinanet.detect(frame)
                     print('return box', r)
 
-
         cap.release()
 
     _a(es, cam_api)
@@ -291,6 +292,7 @@ def runtest(vdo_=0):
     status = False
     # return redirect(url_for('index'))
     return make_response('detect off')
+
 
 if __name__ == '__main__':
     import socket
