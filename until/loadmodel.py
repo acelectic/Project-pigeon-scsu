@@ -12,7 +12,7 @@ def load_data4eval():
         resnet_resource,
         cache_subdir=model_store,
     )
-
+    os.system('unzip ' + model_store + '/data4eval.zip')
 
 def download_imagenet():
     """ Downloads ImageNet weights and returns path to weights file.
