@@ -177,15 +177,19 @@ class Model:
                 found_[self.labels_to_names[label]] += 1
             except:
                 found_[self.labels_to_names[label]] = 1
+        try:
+            
+            if self.es_mode and self.es_status and found_['pigeon'] > 0:
+                print('{tag}\n\n{data}\n\n{tag}'.format(
+                    tag='#'*50,
+                    data='id: {id}\nbird count: {found}'.format(
+                        id=image_id, found=found_)))
+                self.es.elas_image(image=img4elas, scale=scale, found_=found_,
+                                processing_time=processing_time, **main_body)
+                # self.es.elas_date(**main_body)
+        except Exception as e:
+            print(e)
 
-        if self.es_mode and self.es_status and found_['pigeon'] > 0:
-            print('{tag}\n\n{data}\n\n{tag}'.format(
-                tag='#'*50,
-                data='id: {id}\nbird count: {found}'.format(
-                    id=image_id, found=found_)))
-            self.es.elas_image(image=img4elas, scale=scale, found_=found_,
-                               processing_time=processing_time, **main_body)
-            # self.es.elas_date(**main_body)
         return temp_data
 
     def setConfidence(self, confidence):
