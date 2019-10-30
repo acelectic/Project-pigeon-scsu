@@ -1,3 +1,5 @@
+
+
 import glob
 import os
 import sys
@@ -15,7 +17,7 @@ from keras_retinanet.utils.image import preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 
 # thai_timezone = pytz.timezone('Asia/Bangkok')
-import until.set_model2environ
+
 
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, model_is='resnet50'):
