@@ -189,10 +189,10 @@ class Model:
         self.confThreshold = float(confidence)
 
 
-def testResnet50(base_dir):
+def testResnet50(base_dir, es):
     print("{}/n/n{}/n/n{}".format('#'*30, 'Test Speed Resnet 50', '#'*30))
     base_dir = base_dir
-    model = Model(model_is='resnet50')
+    model = Model(model_is='resnet50', es=es)
     result_detect = {}
     avg_process_time = 0
     imgs_dir = glob.glob(base_dir+'/*.png')[:]
@@ -249,10 +249,10 @@ def testResnet50(base_dir):
                     # data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
 
 
-def testResnet101(base_dir):
+def testResnet101(base_dir, es):
     print("{}/n/n{}/n/n{}".format('#'*30, 'Test Speed Resnet 101', '#'*30))
     base_dir = base_dir
-    model = Model(model_is='resnet101')
+    model = Model(model_is='resnet101', es=es)
     result_detect = {}
     avg_process_time = 0
     imgs_dir = glob.glob(base_dir+'/*.png')[:]
@@ -310,10 +310,18 @@ def testResnet101(base_dir):
 
 
 if __name__ == '__main__':
+    from elas_api4test import Elas_api
+
+    es_ip = '192.168.1.29'
+    es_port = 9200
+    es = Elas_api(ip=es_ip)
+    
     args = sys.argv[1:][0]
     base_dir = 'data4eval/test_merge/'
     print(args)
+
+
     if args == '1':
-        testResnet50(base_dir=base_dir)
+        testResnet50(base_dir=base_dir, es=es)
     elif args == '2':
-        testResnet101(base_dir=base_dir)
+        testResnet101(base_dir=base_dir, es=es)
