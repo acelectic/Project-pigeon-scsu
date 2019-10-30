@@ -293,5 +293,8 @@ def runtest(vdo_=0):
     return make_response('detect off')
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0')
-    app.run(host='0.0.0.0', debug=True)
+    import socket
+    if socket.gethostname() == 'minibear-jetson':
+        app.run(host='0.0.0.0')
+    else:
+        app.run(host='0.0.0.0', debug=True)
