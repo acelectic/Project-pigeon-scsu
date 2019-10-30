@@ -93,8 +93,8 @@ class Model:
 
     def gen_datetime(self):
         return radar.random_date(
-            start=datetime(year=2019, month=1, day=1),
-            stop=datetime(year=2019, month=7, day=23))
+            start=datetime(year=2018, month=1, day=1),
+            stop=datetime(year=2019, month=10, day=26))
 
     def detect(self, image):
 
@@ -215,46 +215,6 @@ def testResnet50(base_dir, es):
 
         if _:
             result = model.detect(frame)
-            # print(img_name, len(result))
-
-            if len(result) == 0:
-                continue
-
-            sub_ps_time = 0
-            for label, score, box, processing_time in result:
-                try:
-                    result_detect[img_name] += [{
-                        'label': label,
-                        'score': score,
-                        'processing_time': processing_time,
-                        'box': (box[0], box[1], box[2], box[3])
-                    }]
-                except:
-                    result_detect[img_name] = [{
-                        'label': label,
-                        'score': score,
-                        'processing_time': processing_time,
-                        'box': (box[0], box[1], box[2], box[3])
-                    }]
-                sub_ps_time += processing_time
-
-            avg_sub_ps_time = sub_ps_time / len(result)
-            # print(img_name, ':\t', avg_sub_ps_time)
-            avg_process_time += avg_sub_ps_time
-
-    if len(imgs_dir) > 0:
-        avg_process_time = avg_process_time / len(imgs_dir)
-    print('avg_ps_time:\t', avg_process_time)
-    # detect_dir = base_dir + 'resnet50/detections'
-    # os.makedirs(detect_dir, exist_ok=True)
-
-    # for key, data in result_detect.items():
-    #     # print(key, data)
-    #     with open(detect_dir + '/' + key.replace('.png', '.txt'), 'w') as f:
-    #         for data_2 in data:
-    #             # print(data_2)
-    #             f.write(data_2['label'] + ' ' + '{:.6f} '.format(
-    # data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
 
 
 def testResnet101(base_dir, es):
@@ -275,46 +235,6 @@ def testResnet101(base_dir, es):
 
         if _:
             result = model.detect(frame)
-            # print(img_name, len(result))
-
-            if len(result) == 0:
-                continue
-
-            sub_ps_time = 0
-            for label, score, box, processing_time in result:
-                try:
-                    result_detect[img_name] += [{
-                        'label': label,
-                        'score': score,
-                        'processing_time': processing_time,
-                        'box': (box[0], box[1], box[2], box[3])
-                    }]
-                except:
-                    result_detect[img_name] = [{
-                        'label': label,
-                        'score': score,
-                        'processing_time': processing_time,
-                        'box': (box[0], box[1], box[2], box[3])
-                    }]
-                sub_ps_time += processing_time
-
-            avg_sub_ps_time = sub_ps_time / len(result)
-            # print(img_name, ':\t', avg_sub_ps_time)
-            avg_process_time += avg_sub_ps_time
-
-    if len(imgs_dir) > 0:
-        avg_process_time = avg_process_time / len(imgs_dir)
-    print('avg_ps_time:\t', avg_process_time)
-    detect_dir = base_dir + 'resnet101/detections'
-    os.makedirs(detect_dir, exist_ok=True)
-
-    for key, data in result_detect.items():
-        # print(key, data)
-        with open(detect_dir + '/' + key.replace('.png', '.txt'), 'w') as f:
-            for data_2 in data:
-                # print(data_2)
-                f.write(data_2['label'] + ' ' + '{:.6f} '.format(
-                    data_2['score']) + ' '.join(map(str, data_2['box'])) + '\n')
 
 
 if __name__ == '__main__':
