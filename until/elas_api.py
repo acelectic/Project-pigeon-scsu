@@ -120,7 +120,7 @@ class Elas_api:
             body['dayofweek_text'] = self.dayofweek_text(time_)
 
             body['Month_int'] = self.month_int(time_)
-            body['Mouth_text'] = self.month_text(time_)
+            body['Month_text'] = self.month_text(time_)
 
             body['birds_count'] = found_
 
@@ -141,7 +141,7 @@ class Elas_api:
             body['dayofweek_text'] = self.dayofweek_text(time_)
 
             body['Month_int'] = self.month_int(time_)
-            body['Mounh_text'] = self.month_text(time_)
+            body['Month_text'] = self.month_text(time_)
 
             body['image_id'] = image_id
             # body['found'] = {self.labels_to_names[label]: 1}
