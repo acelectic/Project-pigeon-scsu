@@ -44,9 +44,11 @@ class Model:
         if es == None or es.checkStatus() == False:
             # raise ValueError("Connection failed")
             self.es_status = False
+            print("can't connect to es")
         else:
             self.es_status = True
             self.es = es
+            print('connect es')
 
         self.es_mode = es_mode
 

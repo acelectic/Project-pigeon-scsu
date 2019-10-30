@@ -1,3 +1,4 @@
+
 import os
 from importlib import import_module
 from multiprocessing import Process
@@ -12,8 +13,6 @@ if os.environ.get('CAMERA'):
 else:
     from until.camera_opencv import Camera
 
-from until.elas_api import elas_api
-
 
 try:
 
@@ -21,10 +20,11 @@ try:
     cam_api = camera_control()
 except:
     print("can't connect servo")
-
+    
+from until.elas_api import Elas_api
 es_ip = '192.168.1.29'
 es_port = 9200
-es = elas_api(ip=es_ip)
+es = Elas_api(ip=es_ip)
 es_status = None
 es_status = es.checkStatus()[0]
 
@@ -94,17 +94,20 @@ def mode(subpath):
             pass
         else:
             status = True
-            p = Process(target=run, args=())
+            # p = Process(target=run, args=())
+            p = Process(target=runtest, args=())
+
             p.start()
             p.join()
             print('Detect On')
 
-    return make_response('toggle mode to '+ subpath)
+    return make_response('toggle mode to ' + subpath)
+
 
 @app.route('/detectStatus', methods=["POST"])
 def getDetectStatus():
     global status
-    print('check status: {}'.format( 'on' if status else 'off'))
+    print('check status: {}'.format('on' if status else 'off'))
     return make_response('on' if status else 'off')
 
 
@@ -120,11 +123,11 @@ def set(subpath):
     print(data)
     if subpath == 'frame':
         sec_per_frame = data['frame']
-        print('frame',sec_per_frame)
+        print('frame', sec_per_frame)
 
     elif subpath == 'confidence':
         confidence = data['confidence']
-        print('confidencw',confidence)
+        print('confidencw', confidence)
 
     return redirect(url_for('index'))
 
@@ -160,27 +163,30 @@ def camera_command():
         cam_api.rotateToDefault()
         print(cmd)
 
-
     headers = {"Content-Type": "application/json"}
 
-    return make_response("rotate camera "+ cmd)
+    return make_response("rotate camera " + cmd)
     # return redirect(url_for('snap'))
+
 
 def run(vdo_=0):
     cam_api = None
 
-
     def _a(es, cam_api):
         global status_detect, shot_status
-        print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format('', 'Detect ON', '', confidence, sec_per_frame))
+        print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
+            '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
         from datetime import datetime
-        retinanet = retinanet_model.Model(confidence=confidence, es=es, es_mode=True, cam_api=cam_api)
+
+        retinanet = retinanet_model.Model(
+            confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='resnet50')
 
         status_detect = False
         shot_status = False
         # vdo_ = 'video/YouTube4.mp4'
         # cap = cv2.VideoCapture(vdo_)
+        vdo_='video/video_25620705_061211.mp4'
         cap = cv2.VideoCapture(vdo_)
 
         def task_deley():
@@ -216,9 +222,66 @@ def run(vdo_=0):
                         print(r)
                 if shot_status:
                     shot_tmp = retinanet._updateTracker(frame)
-                    print("cen{}\nmove{}".format((cen_x//2, cen_y//2),shot_tmp))
+                    print("cen{}\nmove{}".format(
+                        (cen_x//2, cen_y//2), shot_tmp))
                     if shot_tmp == 'Stop':
                         shot_status = False
+
+        cap.release()
+
+    _a(es, cam_api)
+    global status
+    status = False
+    # return redirect(url_for('index'))
+    return make_response('detect off')
+
+
+def runtest(vdo_=0):
+    cam_api = None
+
+    def _a(es, cam_api):
+        global status_detect, shot_status
+        print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
+            '', 'Detect ON', '', confidence, sec_per_frame))
+        from retinanet import retinanet_model
+        from datetime import datetime
+
+        retinanet = retinanet_model.Model(
+            confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='resnet50')
+
+        status_detect = False
+        shot_status = False
+        # vdo_ = 'video/YouTube4.mp4'
+        # cap = cv2.VideoCapture(vdo_)
+        vdo_='video/video_25620705_061211.mp4'
+        cap = cv2.VideoCapture(vdo_)
+
+        def task_deley():
+            global status_detect
+            status_detect = True
+            print('Detect status: {}'.format(status_detect))
+
+        def stopTurret():
+            global shot_status
+            shot_status = False
+            print('Turret Status: {}'.format(shot_status))
+
+        scheduler = BackgroundScheduler(timezone=get_localzone())
+        scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
+        # scheduler.add_job(stopTurret, 'interval', seconds=20)
+        scheduler.start()
+
+        while True:
+            _, frame = cap.read()
+            if _:
+                cen_x = frame.shape[1]
+                cen_y = frame.shape[0]
+                if status_detect:
+                    status_detect = False
+                    print("loop running")
+
+                    r = retinanet.detect(frame)
+                    print('return box', r)
 
 
         cap.release()
@@ -230,5 +293,5 @@ def run(vdo_=0):
     return make_response('detect off')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
-    # app.run(host='0.0.0.0', debug=True)
+    # app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)

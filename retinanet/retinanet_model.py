@@ -17,7 +17,7 @@ import cv2
 # thai_timezone = pytz.timezone('Asia/Bangkok')
 
 class Model:
-    def __init__(self, confidence=0.5, es=None, es_mode=False, cam_api=None):
+    def __init__(self, confidence=0.5, es=None, es_mode=False, cam_api=None, model_is='resnet50'):
         self._cam_api = cam_api
 
         self.cen_x = 0
@@ -54,19 +54,20 @@ class Model:
 
 
 
-        try:
-            model_path = os.getcwd() + '/retinanet/model/resnet50_coco_best_v2.1.0.h5'
+        if model_is == 'resnet50':
+
+            # Size image for train on retinenet
+            self.min_side4train = 700
+            self.max_side4train = 700
             self.model = load_model(
-                model_path,
-                backbone_name='resnet50')
-        except:
-            model_path = os.getcwd() + '/model/resnet50_coco_best_v2.1.0.h5'
+                'models/resnet50/model-infer-neg50-epoch-20-loss_0.1431.h5', backbone_name='resnet50')
+        elif model_is == 'resnet101':
+
+            # Size image for train on retinenet
+            self.min_side4train = 400
+            self.max_side4train = 400
             self.model = load_model(
-                model_path,
-                backbone_name='resnet50')
-        # self.model = load_model(
-        #     r'C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\retinanet\model\model.h5',
-        #     backbone_name='resnet50')
+                'models/resnet101/model-infer-neg101-epoch-20-loss_0.1521.h5', backbone_name='resnet50')
 
         self.labels_to_names = {0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus',
                                 6: 'train',
@@ -203,12 +204,13 @@ class Model:
         time_ = self.time2store
         # time_ = datetime.now()
 
-        eventid = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
+        image_id = time_.strftime('%Y%m-%d%H-%M%S-') + str(uuid4())
 
         # process image
         start = time.time()
         boxes, scores, labels = self.model.predict_on_batch(np.expand_dims(image, axis=0))
         processing_time = time.time() - start
+
         print("processing time: ", processing_time)
 
         img4elas, scale4elas = resize_image(draw, min_side=self.min_side4elas, max_side=self.max_side4elas)
@@ -218,7 +220,8 @@ class Model:
         box4turret = boxes/scale
         found_ = {}
 
-        main_body = {'eventid': eventid, 'time_': time_}
+        main_body = {'image_id': image_id, 'time_': time_}
+
         self.__data4turret = {
             "box": box4turret[0][0],
             "score": scores[0][0],
@@ -239,29 +242,35 @@ class Model:
 
             draw_box(img4elas, b, color=color)
 
-            caption = "{} {:.3f} {}".format(self.labels_to_names[label], score, box)
+            caption = "{} {:.3f}".format(self.labels_to_names[label], score)
             # print(caption)
             draw_caption(img4elas, b, caption)
+            
             box = [np.ushort(x).item() for x in box]
+
+            #  if self.es_mode and self.es_status:
+            #     self.es.elas_record(label=label, score=np.float32(score).item(), box=box, image_id=image_id, time_=time_)
+            # index += 1
+
+            if self.es_mode and self.es_status:
+                self.es.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
+            index += 1
 
             try:
                 found_[self.labels_to_names[label]] += 1
             except:
                 found_[self.labels_to_names[label]] = 1
 
-            if self.es_mode and self.es_status:
-                self.es.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
-            index += 1
 
-        self.__updatelastFrame(img4elas)
+        
 
-        if self.es_mode and self.es_status:
+        if self.es_mode and self.es_status and found_ > 0:
             self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
             # self.es.elas_date(**main_body)
-
+        self.__updatelastFrame(img4elas)
         print('Head Shot')
         # return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
-        #                                                                       eventid, len(boxes), processing_time,
+        #                                                                       image_id, len(boxes), processing_time,
         #                                                                       '\n{:#>20} {} {:#<20}'.format('',
         #                                                                                                     'END 1 FRAME',
         #
@@ -299,27 +308,14 @@ class Model:
         self.confThreshold = float(confidence)
 
     def testDetect(self):
-        return 'num {}'.format(datetime.now())
+        self.detect(frame)
+        # for i in glob.glob('data4eval/test/*.png'):
+        #     img = cv2.VideoCapture(i)
 
+        #     _, frame = img.read()
 
-# import cv2
-# from until.elas_api import elas_api
-# if __name__ == '__main__':
-#     es = elas_api(ip = '192.168.1.29')
-#     detect_model = Model(es=es, es_mode=True)
-#
-#     # img = cv2.VideoCapture(r"C:\Users\Kuy Loan\Desktop\Project-pigeon-scsu\vdo\video_25620705_061211.mp4")
-#     img = cv2.VideoCapture(0)
-#     while 1:
-#         _, frame = img.read()
-#
-#         if _:
-#             detect_model.detect(frame)
-#             turretData = detect_model.getDataTurret()
-#             print(turretData)
-#             img_ = detect_model._getlastFrame()
-#             img_ = cv2.drawMarker(img_, turretData['centroid'], color=(255, 125, 128), markerSize=4)
-#             cv2.imshow('turret', img_)
-#
-#             # cv2.imshow('sss', frame)
-#             cv2.waitKey()
+        #     if _:
+        #         detect_model.detect(frame)
+        #         turretData = detect_model.getDataTurret()
+        #         print(turretData)
+        return ''
