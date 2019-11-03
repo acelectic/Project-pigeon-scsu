@@ -1,5 +1,6 @@
 from scipy.io.wavfile import write
 from numpy import arange, pi, sin, int16
+import os
 
 def f(t, f_c, f_m, beta):
     # t    = time
