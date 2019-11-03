@@ -22,3 +22,6 @@ write("slow.wav", N, to_integer(data))
 data = f(x/N, 1500, 8, 100)
 write("fast.wav", N, to_integer(data))
 
+
+file = "fast.wav"
+os.system("mpg123 " + file)
