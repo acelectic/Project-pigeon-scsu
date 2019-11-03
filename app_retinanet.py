@@ -188,7 +188,7 @@ def run(vdo_=0):
         shot_status = False
         # vdo_ = 'video/YouTube4.mp4'
         # cap = cv2.VideoCapture(vdo_)
-        vdo_ = 'video/video_25620705_061211.mp4'
+        # vdo_ = 'video/video_25620705_061211.mp4'
         cap = cv2.VideoCapture(vdo_)
 
         def task_deley():

@@ -16,6 +16,8 @@ import cv2
 import set_model2environ
 # thai_timezone = pytz.timezone('Asia/Bangkok')
 
+from silen import Silen_control as silen
+
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, cam_api=None, model_is='resnet50'):
         self._cam_api = cam_api
@@ -55,6 +57,8 @@ class Model:
 
         resnet50_dir = os.environ['MODEL_RESNET50']
         resnet101_dir = os.environ['MODEL_RESNET101']
+        c_resnet50_dir = os.environ['MODEL_cRESNET50']
+        c_resnet101_dir = os.environ['MODEL_cRESNET101']
         if model_is == 'resnet50':
 
             # Size image for train on retinenet
@@ -65,6 +69,17 @@ class Model:
             self.max_side4train = 700
             self.model = load_model(
                 resnet50_dir, backbone_name='resnet50')
+        elif model_is == 'c_resnet50':
+
+            # Size image for train on retinenet
+            if self.es != None:
+                self.es.setElasIndex(model_is)
+
+            self.min_side4train = 700
+            self.max_side4train = 700
+            self.model = load_model(
+                c_resnet50_dir, backbone_name='resnet50')
+            
         elif model_is == 'resnet101':
             if self.es != None:
                 self.es.setElasIndex(model_is)
@@ -73,6 +88,14 @@ class Model:
             self.max_side4train = 400
             self.model = load_model(
                 resnet101_dir, backbone_name='resnet101')
+        elif model_is == 'c_resnet101':
+            if self.es != None:
+                self.es.setElasIndex(model_is)
+            # Size image for train on retinenet
+            self.min_side4train = 400
+            self.max_side4train = 400
+            self.model = load_model(
+                c_resnet101_dir, backbone_name='resnet101')
 
         self.labels_to_names = {0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus',
                                 6: 'train',
@@ -270,6 +293,7 @@ class Model:
         
 
         if self.es_mode and self.es_status and found_ > 0:
+            silen.alert()
             self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
             # self.es.elas_date(**main_body)
         self.__updatelastFrame(img4elas)
