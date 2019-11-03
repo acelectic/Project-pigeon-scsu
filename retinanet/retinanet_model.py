@@ -303,7 +303,6 @@ class Model:
         if found_['pigeon'] > 0:
             self.silen_.alert()
             if self.es_mode and self.es_status:
-                silen.alert()
                 self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
                 # self.es.elas_date(**main_body)
    
