@@ -13,10 +13,16 @@ from keras_retinanet.utils.image import preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 
 import cv2
-import set_model2environ
+try:
+    import set_model2environ
+except:
+    import retinanet.set_model2environ
 # thai_timezone = pytz.timezone('Asia/Bangkok')
 
-from silen import Silen_control as silen
+try:
+    from silen import Silen_control as silen
+except:
+    from retinanet.silen import Silen_control as silen
 
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, cam_api=None, model_is='resnet50'):

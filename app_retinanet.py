@@ -23,7 +23,7 @@ try:
 except:
     print("can't connect servo")
 
- 
+
 es_ip = '192.168.1.29'
 es_port = 9200
 es = Elas_api(ip=es_ip)
@@ -182,14 +182,14 @@ def run(vdo_=0):
         from datetime import datetime
 
         retinanet = retinanet_model.Model(
-            confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='resnet50')
+            confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
 
         status_detect = False
         shot_status = False
         # vdo_ = 'video/YouTube4.mp4'
         # cap = cv2.VideoCapture(vdo_)
         # vdo_ = 'video/video_25620705_061211.mp4'
-        cap = cv2.VideoCapture(vdo_)
+        cap = cv2.VideoCapture(0)
 
         def task_deley():
             global status_detect
@@ -249,7 +249,7 @@ def runtest(vdo_=0):
         from datetime import datetime
 
         retinanet = retinanet_model.Model(
-            confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='resnet50')
+            confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
 
         status_detect = False
         shot_status = False
