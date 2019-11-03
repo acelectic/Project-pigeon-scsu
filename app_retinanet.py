@@ -96,8 +96,8 @@ def mode(subpath):
             pass
         else:
             status = True
-            # p = Process(target=run, args=())
-            p = Process(target=runtest, args=())
+            p = Process(target=run, args=())
+            # p = Process(target=runtest, args=())
 
             p.start()
             p.join()

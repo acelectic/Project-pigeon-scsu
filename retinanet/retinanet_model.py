@@ -20,12 +20,15 @@ except:
 # thai_timezone = pytz.timezone('Asia/Bangkok')
 
 try:
-    from silen import Silen_control as silen
+    import silen
 except:
-    from retinanet.silen import Silen_control as silen
-
+    import retinanet.silen 
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, cam_api=None, model_is='resnet50'):
+
+        self.silen_ = silen.Silen_control()
+
+
         self._cam_api = cam_api
 
         self.cen_x = 0
@@ -297,21 +300,14 @@ class Model:
 
 
         
-
-        if self.es_mode and self.es_status and found_ > 0:
-            silen.alert()
-            self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
-            # self.es.elas_date(**main_body)
-        self.__updatelastFrame(img4elas)
-        print('Head Shot')
-        # return 'Now: {}\nDate: {}\nelas_id: {}\tbirds: {}\nProcess Time: {}\n{}'.format(datetime.now(), self.time2store,
-        #                                                                       image_id, len(boxes), processing_time,
-        #                                                                       '\n{:#>20} {} {:#<20}'.format('',
-        #                                                                                                     'END 1 FRAME',
-        #
-        #                                                                                              ''))
-        print("box[0][0]:{}".format(box4turret[0][0]))
-        return self.box2tupple(box4turret[0][0])
+        if found_['pigeon'] > 0:
+            self.silen_.alert()
+            if self.es_mode and self.es_status:
+                silen.alert()
+                self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
+                # self.es.elas_date(**main_body)
+   
+        return 'Hello'
 
     def box2tupple(self, box):
         return (box[0], box[1], abs(box[2]-box[0]), abs(box[3]-box[1]))
