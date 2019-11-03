@@ -59,8 +59,8 @@ class Model:
         #         model_path,
         #         backbone_name='resnet50')fl
         # model_path = os.getcwd() + '/model/pigeon_resnet50_midway.h5'
-        resnet50_dir = os.environ['MODEL_RESNET101']
-        resnet101_dir = os.environ['MODEL_RESNET50']
+        resnet50_dir = os.environ['MODEL_RESNET50']
+        resnet101_dir = os.environ['MODEL_RESNET101']
         if model_is == 'resnet50':
 
             # Size image for train on retinenet
