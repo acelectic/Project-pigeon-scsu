@@ -1,6 +1,6 @@
 from scipy.io.wavfile import write
 from numpy import arange, pi, sin, int16
-import os
+from playsound import playsound
 
 def f(t, f_c, f_m, beta):
     # t    = time
@@ -24,5 +24,5 @@ data = f(x/N, 1500, 8, 100)
 write("fast.wav", N, to_integer(data))
 
 
-file = "fast.wav"
-os.system("mpg123 " + file)
+file_silen = "fast.wav"
+playsound(file_silen)
