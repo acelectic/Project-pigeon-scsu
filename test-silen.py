@@ -15,7 +15,7 @@ def to_integer(signal):
     return int16(signal*(2**15 - 1))
 
 N = 48000 # samples per second
-x = arange(3*N) # three seconds of audio
+x = arange(4*N) # three seconds of audio
 
 data = f(x/N, 1500, 2, 100)
 write("slow.wav", N, to_integer(data))
