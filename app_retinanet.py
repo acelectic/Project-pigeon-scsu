@@ -185,7 +185,6 @@ def run(vdo_=0):
             confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
 
         status_detect = False
-        shot_status = False
         # vdo_ = 'video/YouTube4.mp4'
         # cap = cv2.VideoCapture(vdo_)
         # vdo_ = 'video/video_25620705_061211.mp4'
@@ -196,95 +195,18 @@ def run(vdo_=0):
             status_detect = True
             print('Detect status: {}'.format(status_detect))
 
-        def stopTurret():
-            global shot_status
-            shot_status = False
-            print('Turret Status: {}'.format(shot_status))
-
         scheduler = BackgroundScheduler(timezone=get_localzone())
         scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
-        scheduler.add_job(stopTurret, 'interval', seconds=20)
         scheduler.start()
 
         while True:
             _, frame = cap.read()
             if _:
-                cen_x = frame.shape[1]
-                cen_y = frame.shape[0]
-                if status_detect:
-                    if not shot_status:
-                        status_detect = False
-                        print("loop running")
-
-                        r = retinanet.detect(frame)
-                        print('return box', r)
-
-                        retinanet.create_Tracker(bbox=r, frame=frame)
-                        shot_status = True
-                        print(r)
-                if shot_status:
-                    shot_tmp = retinanet._updateTracker(frame)
-                    print("cen{}\nmove{}".format(
-                        (cen_x//2, cen_y//2), shot_tmp))
-                    if shot_tmp == 'Stop':
-                        shot_status = False
-
-        cap.release()
-
-    _a(es, cam_api)
-    global status
-    status = False
-    # return redirect(url_for('index'))
-    return make_response('detect off')
-
-
-def runtest(vdo_=0):
-    cam_api = None
-
-    def _a(es, cam_api):
-        global status_detect, shot_status
-        print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
-            '', 'Detect ON', '', confidence, sec_per_frame))
-        from retinanet import retinanet_model
-        from datetime import datetime
-
-        retinanet = retinanet_model.Model(
-            confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
-
-        status_detect = False
-        shot_status = False
-        # vdo_ = 'video/YouTube4.mp4'
-        # cap = cv2.VideoCapture(vdo_)
-        vdo_ = 'video/video_25620705_061211.mp4'
-        cap = cv2.VideoCapture(vdo_)
-
-        def task_deley():
-            global status_detect
-            status_detect = True
-            print('Detect status: {}'.format(status_detect))
-
-        def stopTurret():
-            global shot_status
-            shot_status = False
-            print('Turret Status: {}'.format(shot_status))
-
-        scheduler = BackgroundScheduler(timezone=get_localzone())
-        scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
-        # scheduler.add_job(stopTurret, 'interval', seconds=20)
-        scheduler.start()
-
-        while True:
-            _, frame = cap.read()
-            if _:
-                cen_x = frame.shape[1]
-                cen_y = frame.shape[0]
                 if status_detect:
                     status_detect = False
                     print("loop running")
-
                     r = retinanet.detect(frame)
-                    print('return box', r)
-
+                    
         cap.release()
 
     _a(es, cam_api)
@@ -292,6 +214,62 @@ def runtest(vdo_=0):
     status = False
     # return redirect(url_for('index'))
     return make_response('detect off')
+
+
+# def runtest(vdo_=0):
+#     cam_api = None
+
+#     def _a(es, cam_api):
+#         global status_detect, shot_status
+#         print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
+#             '', 'Detect ON', '', confidence, sec_per_frame))
+#         from retinanet import retinanet_model
+#         from datetime import datetime
+
+#         retinanet = retinanet_model.Model(
+#             confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
+
+#         status_detect = False
+#         shot_status = False
+#         # vdo_ = 'video/YouTube4.mp4'
+#         # cap = cv2.VideoCapture(vdo_)
+#         vdo_ = 'video/video_25620705_061211.mp4'
+#         cap = cv2.VideoCapture(vdo_)
+
+#         def task_deley():
+#             global status_detect
+#             status_detect = True
+#             print('Detect status: {}'.format(status_detect))
+
+#         def stopTurret():
+#             global shot_status
+#             shot_status = False
+#             print('Turret Status: {}'.format(shot_status))
+
+#         scheduler = BackgroundScheduler(timezone=get_localzone())
+#         scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
+#         # scheduler.add_job(stopTurret, 'interval', seconds=20)
+#         scheduler.start()
+
+#         while True:
+#             _, frame = cap.read()
+#             if _:
+#                 cen_x = frame.shape[1]
+#                 cen_y = frame.shape[0]
+#                 if status_detect:
+#                     status_detect = False
+#                     print("loop running")
+
+#                     r = retinanet.detect(frame)
+#                     print('return box', r)
+
+#         cap.release()
+
+#     _a(es, cam_api)
+#     global status
+#     status = False
+#     # return redirect(url_for('index'))
+#     return make_response('detect off')
 
 
 if __name__ == '__main__':

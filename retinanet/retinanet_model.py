@@ -22,7 +22,7 @@ except:
 try:
     import silen
 except:
-    import retinanet.silen 
+    from retinanet import silen 
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, cam_api=None, model_is='resnet50'):
 
@@ -31,22 +31,11 @@ class Model:
 
         self._cam_api = cam_api
 
-        self.cen_x = 0
-        self.cen_y = 0
 
-        # Size image for train on retinenet
-        self.min_side4train = 600
-        self.max_side4train = 600
-
-        # Size image for Save 2 elasticsearch
-        self.min_side4elas = 600
-        self.max_side4elas = 600
 
         # labels_to_names = {0: 'Pigeon'}
         # print('model confidence:', self.confThreshold)
 
-        self.__data4turret = None
-        self.__lastFrame = np.zeros((600, 800, 1))
 
         # # es = Elasticsearch()
         # self.es = Elasticsearch([{'host': '192.168.1.29', 'port': 9200}])
@@ -76,6 +65,10 @@ class Model:
 
             self.min_side4train = 700
             self.max_side4train = 700
+            
+            self.min_side4elas = 700
+            self.max_side4elas = 700
+        
             self.model = load_model(
                 resnet50_dir, backbone_name='resnet50')
         elif model_is == 'c_resnet50':
@@ -86,6 +79,10 @@ class Model:
 
             self.min_side4train = 700
             self.max_side4train = 700
+            
+            self.min_side4elas = 700
+            self.max_side4elas = 700
+            
             self.model = load_model(
                 c_resnet50_dir, backbone_name='resnet50')
             
@@ -95,6 +92,10 @@ class Model:
             # Size image for train on retinenet
             self.min_side4train = 400
             self.max_side4train = 400
+            
+            self.min_side4elas = 400
+            self.max_side4elas = 400
+            
             self.model = load_model(
                 resnet101_dir, backbone_name='resnet101')
         elif model_is == 'c_resnet101':
@@ -103,6 +104,9 @@ class Model:
             # Size image for train on retinenet
             self.min_side4train = 400
             self.max_side4train = 400
+            
+            self.min_side4elas = 400
+            self.max_side4elas = 400
             self.model = load_model(
                 c_resnet101_dir, backbone_name='resnet101')
 
@@ -126,89 +130,8 @@ class Model:
                                 77: 'teddy bear',
                                 78: 'hair drier', 79: 'toothbrush'}
 
-    def create_Tracker(self , bbox, frame):
-        trackerTypes = ['BOOSTING', 'MIL', 'KCF', 'TLD', 'MEDIANFLOW', 'GOTURN', 'MOSSE', 'CSRT']
-
-        def createTrackerByName(trackerType):
-            # Create a tracker based on tracker name
-            if trackerType == trackerTypes[0]:
-                tracker = cv2.TrackerBoosting_create()
-            elif trackerType == trackerTypes[1]:
-                tracker = cv2.TrackerMIL_create()
-            elif trackerType == trackerTypes[2]:
-                tracker = cv2.TrackerKCF_create()
-            elif trackerType == trackerTypes[3]:
-                tracker = cv2.TrackerTLD_create()
-            elif trackerType == trackerTypes[4]:
-                tracker = cv2.TrackerMedianFlow_create()
-            elif trackerType == trackerTypes[5]:
-                tracker = cv2.TrackerGOTURN_create()
-            elif trackerType == trackerTypes[6]:
-                tracker = cv2.TrackerMOSSE_create()
-            elif trackerType == trackerTypes[7]:
-                tracker = cv2.TrackerCSRT_create()
-            else:
-                tracker = None
-                print('Incorrect tracker name')
-                print('Available trackers are:')
-                for t in trackerTypes:
-                    print(t)
-
-            return tracker
-
-        self.__old_cenTroid = (int(bbox[0]+bbox[2]/2), int(bbox[1]+bbox[3]/2))
-        print('start: ', bbox, '\tcentroid:', self.__old_cenTroid)
-        bboxes = [bbox]
-        # Specify the tracker type
-        trackerType = "CSRT"
-
-        # Create MultiTracker object
-        self.__multiTracker = cv2.MultiTracker_create()
-        # Initialize MultiTracker
-        for bbox in bboxes:
-            self.__multiTracker.add(createTrackerByName(trackerType), frame, bbox)
-
-    def _updateTracker(self, frame):
-        success, boxes = self.__multiTracker.update(frame)
-        print('tracker{}'.format(boxes))
-        # draw tracked objects
-        for i, newbox in enumerate(boxes):
-
-            # p1 = (int(newbox[0]), int(newbox[1]))
-            # p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
-            self.__new_cenTroid = (int(newbox[0]) + int(newbox[2]/2), int(newbox[1])+ int(newbox[3]/2))
-            print(self.__new_cenTroid)
-            self.moveCamera(self.calMove(old_cenTroid=self.__old_cenTroid, new_cenTroid=self.__new_cenTroid))
-        return self.stopmove(self.__new_cenTroid)
-    def stopmove(self, new_cenTroid):
-        stop_distance = 20
-        new_x, new_y = new_cenTroid
-
-        dis_x = abs(self.cen_x - new_x)
-        dis_y = abs(self.cen_y - new_y)
-
-        return 'Stop' if dis_x <= stop_distance and dis_y <= stop_distance else 'Continue'
-
-
-    def moveCamera(self, command):
-        cam_api = self._cam_api
-        v, h = command
-        if v == 'Left':
-            cam_api.rotateLeft()
-        elif v == 'Right':
-            cam_api.rotateRight()
-
-        if h == 'Up':
-            cam_api.rotateUp()
-        elif h == 'Down':
-            cam_api.rotateDown()
-
-    def calMove(self, old_cenTroid, new_cenTroid):
-        old_x, old_y = old_cenTroid
-        new_x, new_y = new_cenTroid
-
-        return 'Left' if new_x > old_x else 'Right', 'Up' if new_y < old_y else 'Down'
-
+    
+   
     def gen_datetime(self, from_date, to_date):
 
         from_date = from_date.split('-')
@@ -285,12 +208,10 @@ class Model:
             
             box = [np.ushort(x).item() for x in box]
 
-            #  if self.es_mode and self.es_status:
-            #     self.es.elas_record(label=label, score=np.float32(score).item(), box=box, image_id=image_id, time_=time_)
-            # index += 1
 
-            if self.es_mode and self.es_status:
-                self.es.elas_record(label=label, score=np.float32(score).item(), box=box, **main_body)
+            if self.labels_to_names[label] == 'pigeon':
+                if self.es_mode and self.es_status:
+                    self.es.elas_record(label=self.labels_to_names[label], score=np.float32(score).item(), box=box, **main_body)
             index += 1
 
             try:
@@ -299,39 +220,19 @@ class Model:
                 found_[self.labels_to_names[label]] = 1
 
 
-        
-        if found_['pigeon'] > 0:
-            self.silen_.alert()
-            if self.es_mode and self.es_status:
-                self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
-                # self.es.elas_date(**main_body)
-   
+        try:
+            if found_['pigeon'] > 0:
+                self.silen_.alert()
+                if self.es_mode and self.es_status:
+                    self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
+                    # self.es.elas_date(**main_body)
+        except Exception as e:
+            print(e)
         return 'Hello'
-
-    def box2tupple(self, box):
-        return (box[0], box[1], abs(box[2]-box[0]), abs(box[3]-box[1]))
-
-    def __shot(self, target_box):
-        pass
 
 
     def getCentroid(self, box):
         return (int((box[0] + box[2])/2), int((box[1] + box[3])/2))
-
-    def __updatelastFrame(self, img):
-        self.__lastFrame = img
-
-    def _getlastFrame(self):
-        return self.__lastFrame
-
-    def getDataTurret(self):
-        tmp = self.__data4turret
-        data = tmp
-        data['centroid']= self.getCentroid(tmp['box'])
-        return data
-
-    def _sentdata2turret(self):
-        pass
 
     def setConfidence(self, confidence):
         print("confident: {} ---> {}".format(self.confThreshold, confidence))
