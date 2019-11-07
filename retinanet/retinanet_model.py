@@ -33,7 +33,7 @@ class Model:
 
 
 
-        # labels_to_names = {0: 'Pigeon'}
+        
         # print('model confidence:', self.confThreshold)
 
 
@@ -70,7 +70,7 @@ class Model:
             self.max_side4elas = 700
         
             self.model = load_model(
-                resnet50_dir, backbone_name='resnet50')
+                resnet50_dir, backbone_name='resnet50').max_side4tr
         elif model_is == 'c_resnet50':
 
             # Size image for train on retinenet
@@ -110,27 +110,27 @@ class Model:
             self.model = load_model(
                 c_resnet101_dir, backbone_name='resnet101')
 
-        self.labels_to_names = {0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus',
-                                6: 'train',
-                                7: 'truck', 8: 'boat', 9: 'traffic light', 10: 'fire hydrant', 11: 'stop sign',
-                                12: 'parking meter', 13: 'bench', 14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse',
-                                18: 'sheep',
-                                19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe', 24: 'backpack',
-                                25: 'umbrella', 26: 'handbag', 27: 'tie', 28: 'suitcase', 29: 'frisbee', 30: 'skis',
-                                31: 'snowboard', 32: 'sports ball', 33: 'kite', 34: 'baseball bat',
-                                35: 'baseball glove',
-                                36: 'skateboard', 37: 'surfboard', 38: 'tennis racket', 39: 'bottle', 40: 'wine glass',
-                                41: 'cup', 42: 'fork', 43: 'knife', 44: 'spoon', 45: 'bowl', 46: 'banana', 47: 'apple',
-                                48: 'sandwich', 49: 'orange', 50: 'broccoli', 51: 'carrot', 52: 'hot dog', 53: 'pizza',
-                                54: 'donut', 55: 'cake', 56: 'chair', 57: 'couch', 58: 'potted plant', 59: 'bed',
-                                60: 'dining table', 61: 'toilet', 62: 'tv', 63: 'laptop', 64: 'mouse', 65: 'remote',
-                                66: 'keyboard', 67: 'cell phone', 68: 'microwave', 69: 'oven', 70: 'toaster',
-                                71: 'sink',
-                                72: 'refrigerator', 73: 'book', 74: 'clock', 75: 'vase', 76: 'scissors',
-                                77: 'teddy bear',
-                                78: 'hair drier', 79: 'toothbrush'}
+        # self.labels_to_names = {0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus',
+        #                         6: 'train',
+        #                         7: 'truck', 8: 'boat', 9: 'traffic light', 10: 'fire hydrant', 11: 'stop sign',
+        #                         12: 'parking meter', 13: 'bench', 14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse',
+        #                         18: 'sheep',
+        #                         19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe', 24: 'backpack',
+        #                         25: 'umbrella', 26: 'handbag', 27: 'tie', 28: 'suitcase', 29: 'frisbee', 30: 'skis',
+        #                         31: 'snowboard', 32: 'sports ball', 33: 'kite', 34: 'baseball bat',
+        #                         35: 'baseball glove',
+        #                         36: 'skateboard', 37: 'surfboard', 38: 'tennis racket', 39: 'bottle', 40: 'wine glass',
+        #                         41: 'cup', 42: 'fork', 43: 'knife', 44: 'spoon', 45: 'bowl', 46: 'banana', 47: 'apple',
+        #                         48: 'sandwich', 49: 'orange', 50: 'broccoli', 51: 'carrot', 52: 'hot dog', 53: 'pizza',
+        #                         54: 'donut', 55: 'cake', 56: 'chair', 57: 'couch', 58: 'potted plant', 59: 'bed',
+        #                         60: 'dining table', 61: 'toilet', 62: 'tv', 63: 'laptop', 64: 'mouse', 65: 'remote',
+        #                         66: 'keyboard', 67: 'cell phone', 68: 'microwave', 69: 'oven', 70: 'toaster',
+        #                         71: 'sink',
+        #                         72: 'refrigerator', 73: 'book', 74: 'clock', 75: 'vase', 76: 'scissors',
+        #                         77: 'teddy bear',
+        #                         78: 'hair drier', 79: 'toothbrush'}
 
-    
+        self.labels_to_names = {0: 'pigeon'}
    
     def gen_datetime(self, from_date, to_date):
 
@@ -146,7 +146,10 @@ class Model:
             stop=datetime(year=2019, month=7, day=23))
 
     def detect(self, image):
-
+        
+        # print('indetect')
+        # cv2.imshow('s',image)
+        # cv2.waitKey()
         self.time2store = self.gen_datetime()
         # self.time2store = datetime.now()
 
@@ -203,7 +206,7 @@ class Model:
             draw_box(img4elas, b, color=color)
 
             caption = "{} {:.3f}".format(self.labels_to_names[label], score)
-            # print(caption)
+            print(time_, '\t', caption)
             draw_caption(img4elas, b, caption)
             
             box = [np.ushort(x).item() for x in box]
@@ -219,15 +222,18 @@ class Model:
             except:
                 found_[self.labels_to_names[label]] = 1
 
+        print('#'*30)
 
         try:
             if found_['pigeon'] > 0:
-                self.silen_.alert()
+                print("{e}".format(e=found_['pigeon']))
+                self.silen_.run_alert()
                 if self.es_mode and self.es_status:
                     self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
                     # self.es.elas_date(**main_body)
         except Exception as e:
-            print(e)
+            print("{e}".format(e=e))
+        print('#'*30)
         return 'Hello'
 
 

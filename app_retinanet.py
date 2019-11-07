@@ -1,14 +1,16 @@
 
-from until.elas_api import Elas_api
-import retinanet.set_model2environ
 import os
 from importlib import import_module
 from multiprocessing import Process
 
 import cv2
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, render_template, Response, request, redirect, url_for, make_response
+from flask import (Flask, Response, make_response, redirect, render_template,
+                   request, url_for)
 from tzlocal import get_localzone
+
+import retinanet.set_model2environ
+from until.elas_api import Elas_api
 
 if os.environ.get('CAMERA'):
     Camera = import_module('camera_' + os.environ['CAMERA']).Camera
@@ -23,8 +25,11 @@ try:
 except:
     print("can't connect servo")
 
+#
 
-es_ip = '192.168.1.29'
+es_ip = '172.27.228.159'
+
+# es_ip = '192.168.1.29'
 es_port = 9200
 es = Elas_api(ip=es_ip)
 es_status = None
@@ -75,35 +80,6 @@ def gen(camera=None):
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(gen(Camera()), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-@app.route('/mode/<path:subpath>', methods=["POST"])
-def mode(subpath):
-    global p, status
-    # print(request.subject)
-
-    if subpath == 'off':
-        if status:
-            p.terminate()
-            status = False
-            print('Detect Off')
-        # else:
-        # return 'Detect is already OFF'
-
-    elif subpath == 'on':
-        if status:
-            # return 'Detect is already ON'
-            pass
-        else:
-            status = True
-            p = Process(target=run, args=())
-            # p = Process(target=runtest, args=())
-
-            p.start()
-            p.join()
-            print('Detect On')
-
-    return make_response('toggle mode to ' + subpath)
 
 
 @app.route('/detectStatus', methods=["POST"])
@@ -171,12 +147,43 @@ def camera_command():
     # return redirect(url_for('snap'))
 
 
+@app.route('/mode/<path:subpath>', methods=["POST"])
+def mode(subpath):
+    global p, status
+    # print(request.subject)
+
+    if subpath == 'off':
+        if status:
+            p.terminate()
+            status = False
+            print('Detect Off')
+        # else:
+        # return 'Detect is already OFF'
+
+    elif subpath == 'on':
+        if status:
+            # return 'Detect is already ON'
+            pass
+        else:
+            status = True
+            ####################################################################################################################
+            # p = Process(target=run_silen, args=())
+            # p = Process(target=runtest, args=())
+            p = Process(target=run, args=())
+
+            p.start()
+            p.join()
+            print('Detect On')
+
+    return make_response('toggle mode to ' + subpath)
+
+
 def run(vdo_=0):
     cam_api = None
 
     def _a(es, cam_api):
         global status_detect, shot_status
-        print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
+        print("{:#^20}  {}  {:#^20}\nconfidence:{}\nSec per frame{}".format(
             '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
         from datetime import datetime
@@ -206,7 +213,7 @@ def run(vdo_=0):
                     status_detect = False
                     print("loop running")
                     r = retinanet.detect(frame)
-                    
+
         cap.release()
 
     _a(es, cam_api)
@@ -215,6 +222,56 @@ def run(vdo_=0):
     # return redirect(url_for('index'))
     return make_response('detect off')
 
+
+def run_silen(vdo_=0):
+    cam_api = None
+
+    def _a(es, cam_api):
+        global status_detect, shot_status
+        print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
+            '', 'Detect ON', '', confidence, sec_per_frame))
+        from retinanet import retinanet_model
+        from datetime import datetime
+
+        retinanet = retinanet_model.Model(
+            confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
+
+        status_detect = False
+        # vdo_ = 'video/YouTube4.mp4'
+        # cap = cv2.VideoCapture(vdo_)
+        # vdo_ = 'video/video_25620705_061211.mp4'
+        import glob
+        imgs = glob.glob('data4eval/test_merge/*.jpg')
+        for img in imgs:
+            cap = cv2.VideoCapture(img)
+             
+             
+            def task_deley():
+                global status_detect
+                status_detect = True
+                print('Detect status: {}'.format(status_detect))
+
+            scheduler = BackgroundScheduler(timezone=get_localzone())
+            scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
+            scheduler.start()
+
+
+            status_detect = True
+            _, frame = cap.read()
+            if _:
+                print('s')
+                if status_detect:
+                    print("loop running")
+                    r = retinanet.detect(frame)
+                    status_detect = False
+
+        cap.release()
+
+    _a(es, cam_api)
+    global status
+    status = False
+    # return redirect(url_for('index'))
+    return make_response('detect off')
 
 # def runtest(vdo_=0):
 #     cam_api = None
