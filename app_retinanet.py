@@ -187,10 +187,12 @@ def run(vdo_=0):
             '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
         from datetime import datetime
-
+        start = time.time()    
         retinanet = retinanet_model.Model(
             confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
+          loadmodel_time = time.time() - start
 
+        print("load model time: ", loadmodel_time)
         status_detect = False
         # vdo_ = 'video/YouTube4.mp4'
         # cap = cv2.VideoCapture(vdo_)
