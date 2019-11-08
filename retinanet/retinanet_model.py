@@ -244,15 +244,4 @@ class Model:
         print("confident: {} ---> {}".format(self.confThreshold, confidence))
         self.confThreshold = float(confidence)
 
-    def testDetect(self):
-        self.detect(frame)
-        # for i in glob.glob('data4eval/test/*.png'):
-        #     img = cv2.VideoCapture(i)
 
-        #     _, frame = img.read()
-
-        #     if _:
-        #        confidenceetect(frame)
-        #        confidenceetect_model.getDataTurret()
-        #        confidenceta)
-        return ''confidence
