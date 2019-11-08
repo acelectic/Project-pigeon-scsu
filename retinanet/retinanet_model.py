@@ -1,9 +1,10 @@
+import glob
+import os
 import time
 from datetime import datetime
 from uuid import uuid4
 
-import glob, os
-
+import cv2
 import numpy as np
 import radar
 # set tf backend to allow memory to grow, instead of claiming everything
@@ -12,7 +13,6 @@ from keras_retinanet.utils.colors import label_color
 from keras_retinanet.utils.image import preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 
-import cv2
 try:
     import set_model2environ
 except:
@@ -22,20 +22,17 @@ except:
 try:
     import silen
 except:
-    from retinanet import silen 
+    from retinanet import silen
+
+
 class Model:
     def __init__(self, confidence=0.5, es=None, es_mode=False, cam_api=None, model_is='resnet50'):
 
         self.silen_ = silen.Silen_control()
 
-
         self._cam_api = cam_api
 
-
-
-        
         # print('model confidence:', self.confThreshold)
-
 
         # # es = Elasticsearch()
         # self.es = Elasticsearch([{'host': '192.168.1.29', 'port': 9200}])
@@ -52,7 +49,6 @@ class Model:
 
         self.confThreshold = float(confidence)
 
-
         resnet50_dir = os.environ['MODEL_RESNET50']
         resnet101_dir = os.environ['MODEL_RESNET101']
         c_resnet50_dir = os.environ['MODEL_cRESNET50']
@@ -65,10 +61,10 @@ class Model:
 
             self.min_side4train = 700
             self.max_side4train = 700
-            
+
             self.min_side4elas = 700
             self.max_side4elas = 700
-        
+
             self.model = load_model(
                 resnet50_dir, backbone_name='resnet50')
         elif model_is == 'c_resnet50':
@@ -79,23 +75,23 @@ class Model:
 
             self.min_side4train = 700
             self.max_side4train = 700
-            
+
             self.min_side4elas = 700
             self.max_side4elas = 700
-            
+
             self.model = load_model(
                 c_resnet50_dir, backbone_name='resnet50')
-            
+
         elif model_is == 'resnet101':
             if self.es != None:
                 self.es.setElasIndex(model_is)
             # Size image for train on retinenet
             self.min_side4train = 400
             self.max_side4train = 400
-            
+
             self.min_side4elas = 400
             self.max_side4elas = 400
-            
+
             self.model = load_model(
                 resnet101_dir, backbone_name='resnet101')
         elif model_is == 'c_resnet101':
@@ -104,7 +100,7 @@ class Model:
             # Size image for train on retinenet
             self.min_side4train = 400
             self.max_side4train = 400
-            
+
             self.min_side4elas = 400
             self.max_side4elas = 400
             self.model = load_model(
@@ -131,13 +127,14 @@ class Model:
         #                         78: 'hair drier', 79: 'toothbrush'}
 
         self.labels_to_names = {0: 'pigeon'}
-   
+
     def gen_datetime(self, from_date, to_date):
 
         from_date = from_date.split('-')
 
         return radar.random_date(
-            start=datetime(year=from_date.year, month=from_date.month, day=from_date.day),
+            start=datetime(year=from_date.year,
+                           month=from_date.month, day=from_date.day),
             stop=datetime(year=to_date.year, month=to_date.month, day=to_date.day))
 
     def gen_datetime(self):
@@ -146,7 +143,7 @@ class Model:
             stop=datetime(year=2019, month=7, day=23))
 
     def detect(self, image):
-        
+
         # print('indetect')
         # cv2.imshow('s',image)
         # cv2.waitKey()
@@ -162,7 +159,8 @@ class Model:
         # preprocess image for network
         image = preprocess_image(image)
         # cv2.imshow('ss22', image)
-        image, scale = resize_image(image, min_side=self.min_side4train, max_side=self.max_side4train)
+        image, scale = resize_image(
+            image, min_side=self.min_side4train, max_side=self.max_side4train)
 
         time_ = self.time2store
         # time_ = datetime.now()
@@ -171,12 +169,14 @@ class Model:
 
         # process image
         start = time.time()
-        boxes, scores, labels = self.model.predict_on_batch(np.expand_dims(image, axis=0))
+        boxes, scores, labels = self.model.predict_on_batch(
+            np.expand_dims(image, axis=0))
         processing_time = time.time() - start
 
         print("processing time: ", processing_time)
 
-        img4elas, scale4elas = resize_image(draw, min_side=self.min_side4elas, max_side=self.max_side4elas)
+        img4elas, scale4elas = resize_image(
+            draw, min_side=self.min_side4elas, max_side=self.max_side4elas)
 
         # correct for image scale
         # boxes /= scale
@@ -208,13 +208,13 @@ class Model:
             caption = "{} {:.3f}".format(self.labels_to_names[label], score)
             print(time_, '\t', caption)
             draw_caption(img4elas, b, caption)
-            
-            box = [np.ushort(x).item() for x in box]
 
+            box = [np.ushort(x).item() for x in box]
 
             if self.labels_to_names[label] == 'pigeon':
                 if self.es_mode and self.es_status:
-                    self.es.elas_record(label=self.labels_to_names[label], score=np.float32(score).item(), box=box, **main_body)
+                    self.es.elas_record(label=self.labels_to_names[label], score=np.float32(
+                        score).item(), box=box, **main_body)
             index += 1
 
             try:
@@ -229,13 +229,13 @@ class Model:
                 print("{e}".format(e=found_['pigeon']))
                 self.silen_.run_alert()
                 if self.es_mode and self.es_status:
-                    self.es.elas_image(image=img4elas, scale=scale, found_=found_, processing_time=processing_time, **main_body)
+                    self.es.elas_image(image=img4elas, scale=scale, found_=found_,
+                                       processing_time=processing_time, **main_body)
                     # self.es.elas_date(**main_body)
         except Exception as e:
             print("{e}".format(e=e))
         print('#'*30)
         return 'Hello'
-
 
     def getCentroid(self, box):
         return (int((box[0] + box[2])/2), int((box[1] + box[3])/2))
@@ -252,7 +252,7 @@ class Model:
         #     _, frame = img.read()
 
         #     if _:
-        #         detect_model.detect(frame)
-        #         turretData = detect_model.getDataTurret()
-        #         print(turretData)
-        return ''
+        #        confidenceetect(frame)
+        #        confidenceetect_model.getDataTurret()
+        #        confidenceta)
+        return ''confidence

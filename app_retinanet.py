@@ -187,10 +187,10 @@ def run(vdo_=0):
             '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
         from datetime import datetime
-        start = time.time()    
+        start = time.time()
         retinanet = retinanet_model.Model(
             confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
-          loadmodel_time = time.time() - start
+        loadmodel_time = time.time() - start
 
         print("load model time: ", loadmodel_time)
         status_detect = False
@@ -246,8 +246,7 @@ def run_silen(vdo_=0):
         imgs = glob.glob('data4eval/test_merge/*.jpg')
         for img in imgs:
             cap = cv2.VideoCapture(img)
-             
-             
+
             def task_deley():
                 global status_detect
                 status_detect = True
@@ -256,7 +255,6 @@ def run_silen(vdo_=0):
             scheduler = BackgroundScheduler(timezone=get_localzone())
             scheduler.add_job(task_deley, 'interval', seconds=sec_per_frame)
             scheduler.start()
-
 
             status_detect = True
             _, frame = cap.read()
