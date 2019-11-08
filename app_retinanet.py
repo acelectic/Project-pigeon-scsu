@@ -41,6 +41,7 @@ status = False
 confidence = 0.5
 sec_per_frame = 5
 
+predict_model = None
 
 @app.after_request
 def set_response_headers(response):
@@ -88,33 +89,10 @@ def getDetectStatus():
     print('check status: {}'.format('on' if status else 'off'))
     return make_response('on' if status else 'off')
 
-
-@app.route('/set/<path:subpath>', methods=["POST"])
-def set(subpath):
-    global sec_per_frame, confidence
-    # print(request.form['frame'])
-    try:
-        data = request.get_json(force=True)
-    except:
-        data = request.form
-
-    print(data)
-    if subpath == 'frame':
-        sec_per_frame = data['frame']
-        print('frame', sec_per_frame)
-
-    elif subpath == 'confidence':
-        confidence = data['confidence']
-        print('confidencw', confidence)
-
-    return redirect(url_for('index'))
-
-
 @app.route('/live_camera', methods=["GET"])
 def live_camera(ip='127.0.0.1'):
     print('from', ip)
     return render_template('live.html', ip=ip)
-
 
 @app.route('/camera_command', methods=["POST"])
 def camera_command():
@@ -147,9 +125,32 @@ def camera_command():
     # return redirect(url_for('snap'))
 
 
+@app.route('/set/<path:subpath>', methods=["POST"])
+def set(subpath):
+    global sec_per_frame, confidence, predict_model
+    # print(request.form['frame'])
+    try:
+        data = request.get_json(force=True)
+    except:
+        data = request.form
+
+    print(data)
+    if subpath == 'frame':
+        sec_per_frame = data['frame']
+        print('frame', sec_per_frame)
+        
+
+    elif subpath == 'confidence':
+        confidence = data['confidence']
+        print('confidencw', confidence)
+        if predict_model != None:
+            predict_model.setConfidence(confidence)
+            
+    return redirect(url_for('index'))
+
 @app.route('/mode/<path:subpath>', methods=["POST"])
 def mode(subpath):
-    global p, status
+    global p, status, predict_model
     # print(request.subject)
 
     if subpath == 'off':
@@ -157,6 +158,7 @@ def mode(subpath):
             p.terminate()
             status = False
             print('Detect Off')
+            predict_model = None
         # else:
         # return 'Detect is already OFF'
 
@@ -182,14 +184,14 @@ def run(vdo_=0):
     cam_api = None
 
     def _a(es, cam_api):
-        global status_detect, shot_status
+        global status_detect, shot_status, predict_model
         print("{:#^20}  {}  {:#^20}\nconfidence:{}\nSec per frame{}".format(
             '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
         from datetime import datetime
         import time
         start = time.time()
-        retinanet = retinanet_model.Model(
+        predict_model = retinanet_model.Model(
             confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
         loadmodel_time = time.time() - start
 
@@ -215,7 +217,7 @@ def run(vdo_=0):
                 if status_detect:
                     status_detect = False
                     print("loop running")
-                    r = retinanet.detect(frame)
+                    r = predict_model.detect(frame)
 
         cap.release()
 
@@ -230,13 +232,13 @@ def run_silen(vdo_=0):
     cam_api = None
 
     def _a(es, cam_api):
-        global status_detect, shot_status
+        global status_detect, shot_status, predict_model
         print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
             '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
         from datetime import datetime
 
-        retinanet = retinanet_model.Model(
+        predict_model = retinanet_model.Model(
             confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
 
         status_detect = False
@@ -263,7 +265,7 @@ def run_silen(vdo_=0):
                 print('s')
                 if status_detect:
                     print("loop running")
-                    r = retinanet.detect(frame)
+                    r = predict_model.detect(frame)
                     status_detect = False
 
         cap.release()
