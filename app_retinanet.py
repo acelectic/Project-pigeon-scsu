@@ -41,8 +41,6 @@ status = False
 confidence = 0.5
 sec_per_frame = 5
 
-predict_model = None
-
 @app.after_request
 def set_response_headers(response):
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -127,7 +125,7 @@ def camera_command():
 
 @app.route('/set/<path:subpath>', methods=["POST"])
 def set(subpath):
-    global sec_per_frame, confidence, predict_model
+    global sec_per_frame, confidence
     # print(request.form['frame'])
     try:
         data = request.get_json(force=True)
@@ -142,15 +140,14 @@ def set(subpath):
 
     elif subpath == 'confidence':
         confidence = data['confidence']
-        print('confidencw', confidence)
-        if predict_model != None:
-            predict_model.setConfidence(confidence)
+        print('confidenc:', confidence)
+
             
     return redirect(url_for('index'))
 
 @app.route('/mode/<path:subpath>', methods=["POST"])
 def mode(subpath):
-    global p, status, predict_model
+    global p, status,
     # print(request.subject)
 
     if subpath == 'off':
@@ -158,7 +155,6 @@ def mode(subpath):
             p.terminate()
             status = False
             print('Detect Off')
-            predict_model = None
         # else:
         # return 'Detect is already OFF'
 
@@ -184,8 +180,8 @@ def run(vdo_=0):
     cam_api = None
 
     def _a(es, cam_api):
-        global status_detect, shot_status, predict_model
-        print("{:#^20}  {}  {:#^20}\nconfidence:{}\nSec per frame{}".format(
+        global status_detect, shot_status
+        print("{:#^20}  {}  {:#^20}\nconfidence:{}\nSec per frame:{}".format(
             '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
         from datetime import datetime
@@ -215,10 +211,10 @@ def run(vdo_=0):
             _, frame = cap.read()
             if _:
                 if status_detect:
-                    status_detect = False
-                    print("loop running")
+                    print("Detect running")
                     r = predict_model.detect(frame)
-
+                    status_detect = False
+                    
         cap.release()
 
     _a(es, cam_api)
@@ -232,7 +228,7 @@ def run_silen(vdo_=0):
     cam_api = None
 
     def _a(es, cam_api):
-        global status_detect, shot_status, predict_model
+        global status_detect, shot_status
         print("{:#^20}{}{:#^20}\nconfidence:{}\nSec per frame{}".format(
             '', 'Detect ON', '', confidence, sec_per_frame))
         from retinanet import retinanet_model
