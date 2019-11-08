@@ -70,7 +70,7 @@ class Model:
             self.max_side4elas = 700
         
             self.model = load_model(
-                resnet50_dir, backbone_name='resnet50').max_side4tr
+                resnet50_dir, backbone_name='resnet50')
         elif model_is == 'c_resnet50':
 
             # Size image for train on retinenet
