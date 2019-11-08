@@ -147,7 +147,7 @@ def set(subpath):
 
 @app.route('/mode/<path:subpath>', methods=["POST"])
 def mode(subpath):
-    global p, status,
+    global p, status
     # print(request.subject)
 
     if subpath == 'off':
