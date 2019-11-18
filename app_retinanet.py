@@ -27,9 +27,9 @@ except:
 
 #
 
-es_ip = '172.27.228.159'
+# es_ip = '172.27.228.159'
 
-# es_ip = '192.168.1.29'
+es_ip = '192.168.1.29'
 es_port = 9200
 es = Elas_api(ip=es_ip)
 es_status = None

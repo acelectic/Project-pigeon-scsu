@@ -143,12 +143,11 @@ class Model:
             stop=datetime(year=2019, month=7, day=23))
 
     def detect(self, image):
-
         # print('indetect')
         # cv2.imshow('s',image)
         # cv2.waitKey()
-        self.time2store = self.gen_datetime()
-        # self.time2store = datetime.now()
+        # self.time2store = self.gen_datetime()
+        self.time2store = datetime.now()
 
         self.cen_x = image.shape[1]//2
         self.cen_y = image.shape[0]//2
@@ -227,6 +226,8 @@ class Model:
         try:
             if found_['pigeon'] > 0:
                 print("{e}".format(e=found_['pigeon']))
+                save_imname = "pigeon_{}.png".format(image_id)
+                cv2.imwrite("evalresult/test_alert/{}".format(save_imname), img4elas)
                 self.silen_.run_alert()
                 if self.es_mode and self.es_status:
                     self.es.elas_image(image=img4elas, scale=scale, found_=found_,
