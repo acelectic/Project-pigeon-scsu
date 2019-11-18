@@ -59,11 +59,11 @@ class Model:
             if self.es != None:
                 self.es.setElasIndex(model_is)
 
-            self.min_side4train = 700
-            self.max_side4train = 700
+            self.min_side4train = 600
+            self.max_side4train = 600
 
-            self.min_side4elas = 700
-            self.max_side4elas = 700
+            self.min_side4elas = 600
+            self.max_side4elas = 600
 
             self.model = load_model(
                 resnet50_dir, backbone_name='resnet50')
@@ -73,11 +73,11 @@ class Model:
             if self.es != None:
                 self.es.setElasIndex(model_is)
 
-            self.min_side4train = 700
-            self.max_side4train = 700
+            self.min_side4train = 600
+            self.max_side4train = 600
 
-            self.min_side4elas = 700
-            self.max_side4elas = 700
+            self.min_side4elas = 600
+            self.max_side4elas = 600
 
             self.model = load_model(
                 c_resnet50_dir, backbone_name='resnet50')
