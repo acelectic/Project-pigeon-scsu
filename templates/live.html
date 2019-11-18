@@ -2,59 +2,62 @@
 
 <html>
 {% block content %}
+
 <body>
-<div class="head1">
-    <h1  class="head_1">Video Streaming</h1>
-</div>
-<div class="divider" style=" margin: 20px"></div>
- <div class="flex-row" style="justify-content:center;"style="align-text:center;">
-    <img src="{{ url_for('video_feed') }}">
-</div>
-<div class="flex-row" style="justify-content:center;">
-    <div class="flex-btm">
-        <form  action="/" method="post">
-            <button class="btn btn-info bne1 formButtonfront" type="submit" >
-                Back
-            </button>
-        </form>
+    <div class="head1">
+        <h1 class="head_1">Video Streaming</h1>
     </div>
-</div>
-<div class="flex-row" style="justify-content:center;">
-    <div class="flex-btm">
-        <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Left'>Left</button>
-        <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Right'>Right</button>
-        <!-- <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Up'>Up</button>
-        <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Down'>Down</button> -->
-        <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Default'>Default</button>
+    <div class="divider" style=" margin: 20px"></div>
+    <div class="flex-row" style="justify-content:center;" style="align-text:center;">
+        <img src="{{ url_for('video_feed') }}">
     </div>
-</div>
+    <div class="flex-row" style="justify-content:center;">
+        <div class="flex-btm">
+            <form action="/" method="post">
+                <button class="btn btn-info bne1 formButtonfront" type="submit">
+                    Back
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="flex-row" style="justify-content:center;">
+        <div class="flex-btm">
+            <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Left'>Left</button>
+            <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Right'>Right</button>
+            <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Up'>Up</button>
+            <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Down'>Down</button>
+            <button class="btn btn-info bne1 formButtonfront" name="camera_control" command='Default'>Default</button>
+        </div>
+    </div>
 
-<script>
+    <script>
 
-    $('button[name="camera_control"]').click(function(e){
-<!--      e.preventDefault(); // The flicker is a codepen thing-->
-      var tmp =  $(this).attr('command');
-     $.ajax({type:'POST',
-            url:'/camera_command',
-            cache: false,
-            data: {'cmd':tmp},
-        timeout: 10000,
-        error: function(){
-            console.log("command error: " + tmp);
-<!--            return true;-->
-        },
-        success: function(msg){
-            console.log("rotate camera" + tmp);
-        }});
-    });
+        $('button[name="camera_control"]').click(function (e) {
 
-</script>
+            var tmp = $(this).attr('command');
+            $.ajax({
+                type: 'POST',
+                url: '/camera_command',
+                cache: false,
+                data: { 'cmd': tmp },
+                timeout: 10000,
+                error: function () {
+                    console.log("command error: " + tmp);
+                },
+                success: function (msg) {
+                    console.log("rotate camera" + tmp);
+                }
+            });
+        });
 
-
-
+    </script>
 
 
-<!--<img src={{imgdir}}>-->
+
+
+
+    <!--<img src={{imgdir}}>-->
 </body>
 {% endblock %}
+
 </html>
