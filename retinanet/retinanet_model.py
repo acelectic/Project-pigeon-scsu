@@ -228,6 +228,7 @@ class Model:
                 print("{e}".format(e=found_['pigeon']))
                 save_imname = "pigeon_{}.png".format(image_id)
                 cv2.imwrite("evalresult/test_alert/{}".format(save_imname), img4elas)
+
                 self.silen_.run_alert()
                 if self.es_mode and self.es_status:
                     self.es.elas_image(image=img4elas, scale=scale, found_=found_,
