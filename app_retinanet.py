@@ -29,7 +29,9 @@ except:
 
 # es_ip = '172.27.228.159'
 
-es_ip = '192.168.1.29'
+# es_ip = '192.168.1.29'
+es_ip = '172.27.228.208'
+
 es_port = 9200
 es = Elas_api(ip=es_ip)
 es_status = None
@@ -237,7 +239,7 @@ def run_silen(vdo_=0):
         predict_model = retinanet_model.Model(
             confidence=confidence, es=es, es_mode=True, cam_api=cam_api, model_is='c_resnet50')
 
-        status_detect = False
+        status_detect = Falseminibear-jetson
         # vdo_ = 'video/YouTube4.mp4'
         # cap = cv2.VideoCapture(vdo_)
         # vdo_ = 'video/video_25620705_061211.mp4'
